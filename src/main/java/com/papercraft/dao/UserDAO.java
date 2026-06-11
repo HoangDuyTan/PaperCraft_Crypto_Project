@@ -536,4 +536,73 @@ public class UserDAO {
         }
         return false;
     }
+    public boolean insertNewKey(int userId, String publicKey) {
+        String sqlExpireOld = "UPDATE user_keys SET status = 'EXPIRED', revoked_at = NOW() WHERE user_id = ? AND status = 'ACTIVE'";
+        String sqlInsertNew = "INSERT INTO user_keys (user_id, public_key, status, created_at) VALUES (?, ?, 'ACTIVE', NOW())";
+
+        Connection conn = null;
+        try {
+            conn = DBConnect.getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement psExpire = conn.prepareStatement(sqlExpireOld)) {
+                psExpire.setInt(1, userId);
+                psExpire.executeUpdate();
+            }
+
+            try (PreparedStatement psInsert = conn.prepareStatement(sqlInsertNew)) {
+                psInsert.setInt(1, userId);
+                psInsert.setString(2, publicKey);
+                psInsert.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (Exception ex) { ex.printStackTrace(); }
+            }
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try { conn.close(); } catch (Exception e) { e.printStackTrace(); }
+            }
+        }
+        return false;
+    }
+
+    public boolean revokeKey(int userId) {
+        String sql = "UPDATE user_keys  SET status = 'REVOKED', revoked_at = NOW()  WHERE user_id = ? AND status = 'ACTIVE'";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String[] getActivedKey(int userId) {
+        String sql = "SELECT public_key, status, created_at FROM user_keys WHERE user_id = ? AND status = 'ACTIVE'";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                            rs.getString("public_key"),
+                            rs.getString("status"),
+                            rs.getString("created_at")
+                    };
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

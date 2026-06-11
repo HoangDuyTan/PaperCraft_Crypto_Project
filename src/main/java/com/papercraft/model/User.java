@@ -19,6 +19,9 @@ public class User implements Serializable {
     public String fullname;
     private double totalSpending;
     private List<String> permissions = new ArrayList<>();
+    private  String publicKey;
+    private  String keyStatus;
+    private  String keyUpdateAt;
 
     public User() {
     }
@@ -137,4 +140,28 @@ public class User implements Serializable {
     public List<String> getPermissions() { return permissions; }
 
     public void setPermissions(List<String> permissions) { this.permissions = permissions; }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public String getKeyStatus() {
+        return keyStatus;
+    }
+
+    public void setKeyStatus(String keyStatus) {
+        this.keyStatus = keyStatus;
+    }
+
+    public String getKeyUpdateAt() {
+        return keyUpdateAt;
+    }
+
+    public void setKeyUpdateAt(String keyUpdateAt) {
+        this.keyUpdateAt = keyUpdateAt;
+    }
 }

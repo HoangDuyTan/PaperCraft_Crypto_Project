@@ -37,6 +37,12 @@
                 Đổi mật khẩu
             </a>
         </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/key-management"
+               class="${fn:contains(uri, 'key-management') ? 'active' : ''}">
+                <i class="fa-solid fa-key-skeleton"></i> Quản lý khóa chữ ký số
+            </a>
+        </li>
 
         <li>
             <a href="${pageContext.request.contextPath}/logout" id="account-logout" class="logout-link">
