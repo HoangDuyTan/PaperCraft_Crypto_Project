@@ -250,20 +250,26 @@ public class OrderDAO {
 
     public int insertOrder(Connection conn, Order order) throws SQLException {
         String sql = """
-                        INSERT INTO orders (user_id, status, total_price, note, shipping_fee, shipping_provider, shipping_name, shipping_phone, shipping_address)
-                        VALUES (?, ?, ?, ? ,?, ?, ?, ?,?)
-                """;
-
+                    INSERT INTO orders (user_id, status, total_price,hash_value, signature,voucher_code, discount_amount,note, shipping_fee, shipping_provider,shipping_name, shipping_phone, shipping_address)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             ps.setInt(1, order.getUserId());
             ps.setString(2, order.getStatus());
             ps.setBigDecimal(3, order.getTotalPrice());
-            ps.setString(4, order.getNote());
-            ps.setBigDecimal(5, order.getShippingFee());
-            ps.setString(6, order.getShippingProvider());
-            ps.setString(7, order.getShippingName());
-            ps.setString(8, order.getShippingPhone());
-            ps.setString(9, order.getShippingAddress());
+
+            ps.setString(4, order.getHashValue());
+            ps.setString(5, order.getSignature());
+
+            ps.setString(6, order.getVoucherCode() == null ? "NONE" : order.getVoucherCode());
+            ps.setBigDecimal(7, order.getDiscountAmount() == null ? BigDecimal.ZERO : order.getDiscountAmount());
+
+            ps.setString(8, order.getNote());
+            ps.setBigDecimal(9, order.getShippingFee());
+            ps.setString(10, order.getShippingProvider());
+            ps.setString(11, order.getShippingName());
+            ps.setString(12, order.getShippingPhone());
+            ps.setString(13, order.getShippingAddress());
 
             int affectedRows = ps.executeUpdate();
 

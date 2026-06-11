@@ -12,6 +12,8 @@ public class OrderItem implements Serializable {
     public Product product;
     public BigDecimal total;
 
+    public BigDecimal discountRate;
+
     public OrderItem() {}
 
     public OrderItem(int id, Integer orderId, Integer productId, Integer quantity, BigDecimal price, Product product, BigDecimal total) {
@@ -78,5 +80,13 @@ public class OrderItem implements Serializable {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public BigDecimal getDiscountRate() {
+        return discountRate;
+    }
+
+    public void setDiscountRate(BigDecimal discountRate) {
+        this.discountRate = discountRate;
     }
 }
