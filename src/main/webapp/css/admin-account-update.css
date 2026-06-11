@@ -1,0 +1,140 @@
+    .admin-customer-update-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        margin-bottom: 30px;
+        background: transparent;
+        padding: 0 10px;
+    }
+
+    .admin-customer-update-header h1 {
+        margin: 10px;
+        text-decoration: none;
+    }
+
+    .admin-customer-update-header a {
+        font-size: 16px;
+        text-decoration: none;
+        font-weight: 600;
+        color: var(--primary-color);
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .admin-customer-update-header a:hover {
+        background-color: #165FF2;
+        color: #fff;
+    }
+
+    .customer-update-view {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .customer-update-view h3 {
+        margin-top: 0;
+        border-left: 5px solid var(--primary-color);
+        padding-left: 10px;
+        color: #333;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .customer-update-view form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 30px;
+    }
+
+    .customer-update-view label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .customer-update-view input[type="text"],
+    .customer-update-view input[type="email"],
+    .customer-update-view input[type="date"],
+    .customer-update-view select,
+    .customer-update-view input[type="password"],
+    .customer-update-view textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+
+    }
+
+    .customer-update-view input[type="text"]:focus,
+    .customer-update-view input[type="email"]:focus,
+    .customer-update-view input[type="date"]:focus,
+    .customer-update-view select:focus,
+    .customer-update-view input[type="password"],
+    .customer-update-view textarea:focus {
+        border-color: #2477BF;
+        box-shadow: 0 0 4px rgba(36, 119, 191, 0.4);
+        outline: none;
+    }
+
+    .customer-update-view input[type="date"] {
+        cursor: pointer;
+    }
+
+    .customer-update-view textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .customer-update-view textarea::placeholder {
+        font-family: 'Montserrat',sans-serif;
+    }
+
+    .customer-update-view .block-full-width {
+        grid-column: 1 / -1;
+        /*-- định vị vị trí bắt đầu và kết thúc mép trái/mép phải*/
+    }
+
+    .customer-update-view .buttons {
+        grid-column: 1 / -1;
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .customer-update-view .bt {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .customer-update-view .bt.save {
+        background-color: #165FF2;
+        color: white;
+    }
+
+    .customer-update-view .bt.save:hover {
+        background-color: #0d47c8;
+    }
+
+    .customer-update-view .bt.cancel {
+        background-color: #ccc;
+        color: #333;
+    }
+
+    .customer-update-view .bt.cancel:hover {
+        background-color: #aaa;
+    }

@@ -1,0 +1,190 @@
+.admin-main-content {
+    user-select: none;
+    padding: 30px 40px;
+    background-color: var(--third-color);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    user-select: text;
+}
+
+.searchbox {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.searchbox input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    min-width: 240px;
+}
+
+.searchbox button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.searchbox button:hover {
+    background-color: blue;
+}
+
+.banner-table {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.banner-table table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.banner-table thead tr {
+    background: #f1f3f5;
+    border-radius: 12px;
+}
+
+.banner-table th {
+    padding: 14px 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+}
+
+.banner-table td {
+    padding: 14px 18px;
+    color: #444;
+    vertical-align: middle;
+    background: #fff;
+    border-top: 1px solid #f1f1f1;
+}
+
+.banner-table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: 0.2s ease;
+}
+
+.banner-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.banner-img {
+    width: 140px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.status-col {
+    text-align: center;
+}
+
+.action-col {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-edit {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-edit:hover {
+    text-decoration: underline;
+}
+
+.btn-delete {
+    color: red;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-delete:hover {
+    text-decoration: underline;
+}
+
+.banner-table th:nth-child(1),
+.banner-table td:nth-child(1) {
+    width: 5%;
+}
+
+.banner-table th:nth-child(2),
+.banner-table td:nth-child(2) {
+    width: 18%;
+}
+
+.banner-table th:nth-child(4),
+.banner-table td:nth-child(4) {
+    width: 8%;
+}
+
+.banner-table th:nth-child(5),
+.banner-table td:nth-child(5) {
+    width: 10%;
+}
+
+.banner-table th:nth-child(7),
+.banner-table td:nth-child(7) {
+    width: 15%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+}

@@ -1,0 +1,157 @@
+/* ----- MAIN CONTENT ----- */
+.admin-main-content {
+    user-select: none;
+    padding: 30px 40px;
+    background-color: var(--third-color);
+}
+
+.admin-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    flex-direction: column;
+    user-select: text;
+}
+
+.admin-main-content #bt-search {
+    flex: 1 10%;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    background: #165ff2;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+
+}
+
+.admin-main-content #bt-search:hover {
+    background-color: #024ce1;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.date-search-form {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.date-input {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+}
+
+.auto-search-box {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 95%;
+    margin: 10px auto 10px;
+    display: flex;
+    flex-direction: row;
+    gap:25px;
+}
+
+.search-control {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+}
+
+
+.user-review-searchbox {
+    width: 80%;
+    margin: 0 5px;
+}
+
+
+.product-review {
+    overflow: hidden;
+    margin: 25px auto;
+    width: 95%;
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.product-review table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+
+.product-review th {
+    padding: 14px 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+
+}
+
+.product-review thead tr {
+    background: #f1f3f5;
+    border-radius: 12px;
+}
+
+.product-review td {
+    padding: 14px 18px;
+    color: #444;
+    vertical-align: middle;
+    background: #fff;
+    border-top: 1px solid #f1f1f1;
+}
+
+.product-review tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    transition: 0.2s ease;
+}
+
+.product-review tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-review tbody tr:last-child {
+    border-bottom: none;
+}
+
+.product-review .actions {
+    user-select: none;
+}
+
+
+.product-review .stars {
+    font-weight: bold;
+    color: #f39c12;
+}
+
+.product-review .actions a {
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 15px;
+    transition: opacity 0.2s;
+}
+
+.product-review .actions a:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.product-review .actions .btn-delete {
+    color: #dc3545;
+}

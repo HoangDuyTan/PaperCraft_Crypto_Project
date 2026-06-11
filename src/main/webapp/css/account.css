@@ -1,0 +1,165 @@
+.account-wrapper {
+    padding: 120px 20px 60px 20px;
+    background-color: var(--third-color);
+    min-height: calc(100vh - 180px);
+}
+
+.account-title {
+    font-size: 36px;
+    font-weight: 550;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.account-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.account-sidebar {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
+}
+
+.account-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.account-sidebar ul li a i {
+    margin-right: 12px;
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
+
+.account-sidebar ul li a:hover,
+.account-sidebar ul li a.active {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.account-sidebar .logout-link {
+    color: #D32F2F;
+}
+.account-sidebar .logout-link:hover {
+    background-color: #ffebee;
+    color: #D32F2F;
+}
+
+.account-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px 40px;
+}
+
+.account-content h2 {
+    font-size: 24px;
+    margin-top: 0;
+}
+.account-content p {
+    font-size: 16px;
+    color: gray;
+    margin-bottom: 30px;
+}
+
+.account-form .form-row {
+    display: flex;
+    gap: 20px;
+}
+.account-form .form-group {
+    flex: 1;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.account-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.account-form input[type="text"],
+.account-form input[type="email"],
+.account-form input[type="password"]{
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.account-form select {
+    cursor: pointer;
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.divider {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.btn {
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    border: none;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    transition: background-color 0.3s;
+}
+.btn-primary:hover {
+    background-color: blue;
+}
+
+.account-form .form-group i {
+    position: absolute;
+    top: 42px;
+    font-size: 18px;
+    z-index: 10;
+}
+
+.account-form .form-group i.bx-lock-alt {
+    left: 15px;
+}
+
+.account-form .form-group i.toggle-password {
+    right: 15px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.account-form .form-group i.toggle-password:hover {
+    color: var(--primary-color);
+}

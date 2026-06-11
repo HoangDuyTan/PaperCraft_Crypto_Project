@@ -1,0 +1,240 @@
+.admin-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-content-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.btn.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.btn-primary:hover {
+    background-color: blue;
+}
+
+.btn.btn-primary i {
+    margin-right: 8px;
+}
+
+
+/*------------search-type form-----------*/
+.search-type{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    border: solid #ccc;
+    padding: 16px;
+    margin-bottom: 50px;
+    border-radius: 8px;
+    border-width: 0 1px 1.5px 1px;
+    background-color: #fff;
+    box-shadow: 0.5px 3px 4px 3px #E3E5E7;
+}
+
+.custom-dropdown {
+    position: relative;
+}
+
+.select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 44px;
+    margin: 15px 0;
+    padding: 0 16px;
+    background-color: #F3F3F5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.selected-value {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.title-dropdown {
+    background-color: #f0f0f0;
+}
+
+.arrow {
+    font-size: 1rem;
+    color: #888;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+.option-value {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    display: none;
+}
+
+.option-value.open {
+    display: block;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.option-item:hover {
+    background-color: #f0f0f0;
+}
+
+.option-item.selected {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.option-item.selected::after {
+    content: '✓';
+    font-size: 16px;
+}
+
+
+
+/* ----- PRODUCTS TABLE ----- */
+.product-table-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.btn-action.edit {
+    color: #007bff;
+}
+
+.btn-action.delete {
+    color: #dc3545;
+}
+
+.btn-action + .btn-action {
+    margin-left: 15px;
+}
+
+.product-table th:nth-child(1) {
+    width: 5%;
+}
+
+.product-table th:nth-child(2) {
+    width: 10%;
+}
+
+.product-table th:nth-child(3) {
+    width: 35%;
+}
+
+.product-table th:nth-child(4) {
+    width: 15%;
+}
+
+.product-table th:nth-child(5) {
+    width: 10%;
+}
+
+.product-table th:nth-child(6) {
+    width: 10%;
+}
+
+.product-table th:nth-child(7) {
+    width: 15%;
+}
+
+.content-table thead th,
+.content-table tbody td {
+    text-align: center;
+}
+
+.content-table thead th:nth-child(3),
+.content-table tbody td:nth-child(3) {
+    text-align: left;
+}
+
+/* ========= Table ========== */
+{
+    background: #fff
+;
+    padding: 20px 25px
+;
+    border-radius: 12px
+;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08)
+;
+}
+
+.content-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.content-table thead tr {
+    background: #f1f3f5;
+    border-radius: 12px;
+}
+
+.content-table th {
+    background: #f1f3f5;
+}
+
+.content-table thead th {
+    padding: 14px 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.content-table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    transition: 0.2s ease;
+}
+
+.content-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.content-table tbody td {
+    padding: 14px 18px;
+    color: #444;
+    vertical-align: middle;
+    background: #fff;
+    border-top: 1px solid #f1f1f1;
+}

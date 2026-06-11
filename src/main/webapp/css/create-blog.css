@@ -1,0 +1,173 @@
+.blog-create-wrapper {
+    margin-top: 140px;
+    margin-bottom: 80px;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.blog-create-wrapper .blog-create-card {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    padding: 35px 40px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+.blog-create-wrapper .blog-create-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--fourth-color);
+}
+
+.blog-create-wrapper .blog-create-sub {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.blog-create-wrapper form.blog-form .form-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.blog-create-wrapper .form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.blog-create-wrapper .form-group input,
+.blog-create-wrapper .form-group select,
+.blog-create-wrapper .form-group textarea {
+    max-width: 870px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.blog-create-wrapper .form-group input:focus,
+.blog-create-wrapper .form-group select:focus,
+.blog-create-wrapper .form-group textarea:focus {
+    border-color: #2477BF;
+    box-shadow: 0 0 4px rgba(36, 119, 191, 0.4);
+    outline: none;
+
+}
+
+.blog-create-wrapper .form-group select,
+.blog-create-wrapper #blog-tags {
+    max-width: 200px;
+    width: 100%;
+}
+
+.blog-create-wrapper textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.blog-create-wrapper .submit-blog {
+    background: var(--primary-color);
+    border: none;
+    padding: 14px 22px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.blog-create-wrapper .submit-blog:hover {
+    background-color: blue;
+}
+
+/* UPLOAD */
+.blog-create-wrapper .upload-box {
+    max-width: 870px;
+    width: 100%;
+    padding: 30px 12px;
+    border: 2px dashed #bbb;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    position: relative;
+}
+
+.blog-create-wrapper .upload-box:hover {
+    border-color: var(--primary-color);
+}
+
+/*------------ Nút chọn ảnh  ------------*/
+.blog-create-wrapper .upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #f6f7f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.blog-create-wrapper .upload-label:hover {
+    background: #eceff2;
+}
+
+/*------------  Ảnh preview ------------*/
+.blog-create-wrapper .preview-wrapper {
+    position: relative;
+    display: none;
+    margin-top: 18px;
+    width: max-content;
+}
+
+.blog-create-wrapper .thumb-preview {
+    width: 260px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.09);
+}
+
+.blog-create-wrapper .remove-thumb-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    background-color: var(--fourth-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+}
+
+.blog-create-wrapper .remove-thumb-btn:hover {
+    background-color: red;
+    transition: background-color 0.2s ease;
+}
+
+/*------------  Lỗi ------------*/
+.error-text {
+    color: red;
+    font-size: 12px;
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    display: none;
+}
+
+.cke_notification_warning {
+    display: none !important;
+}

@@ -1,0 +1,469 @@
+.container {
+    width: 80%;
+    height: auto;
+    display: grid;
+    margin: 85px auto 0 auto;
+    user-select: none;
+}
+
+.content {
+    width: 100%;
+    display: grid;
+}
+
+.top-content h1 {
+    font-size: 2rem;
+}
+
+.top-content p {
+    font-size: 1.1rem;
+    color: #4A5565;
+}
+
+/* css for search container */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    border: solid #ccc;
+    padding: 16px;
+    margin-bottom: 50px;
+    border-radius: 8px;
+    border-width: 0 1px 1.5px 1px;
+    background-color: #fff;
+    box-shadow: 0.5px 3px 4px 3px #E3E5E7;
+}
+
+
+.search-top {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+
+.search-box {
+    flex: 1;
+    background: #F3F3F5;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.search-box input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+}
+
+.search-box {
+    position: relative;
+    width: 300px; /* Hoặc độ rộng bạn muốn */
+}
+
+.suggest-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 2;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+}
+
+.suggest-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggest-item:hover {
+    background: #f0f7ff;
+    color: #007bff;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bt-search {
+    background: #165FF2;
+    color: #fff;
+}
+
+.bt-search i {
+    margin: 5px;
+}
+
+
+.bt-clear {
+    background: transparent;
+    border: 1px solid #ddd;
+}
+
+.bt-clear:hover {
+    background: #f1f1f1;
+}
+
+.search-bottom {
+    display: flex;
+    gap: 15px;
+}
+.search-bottom .custom-dropdown {
+    flex: 1;
+}
+
+/* css for dropdown*/
+.custom-dropdown {
+    position: relative;
+}
+
+.select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 44px;
+    padding: 0 16px;
+    background-color: #F3F3F5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.selected-value {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.title-dropdown {
+    background-color: #f0f0f0;
+}
+
+.arrow {
+    font-size: 1rem;
+    color: #888;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+.option-value {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: none;
+}
+
+.option-value.open {
+    display: block;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.option-item:hover {
+    background-color: #f0f0f0;
+}
+
+.option-item.selected {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.option-item.selected::after {
+    content: '✓';
+    font-size: 16px;
+}
+
+@media (min-width: 1201px) and  (max-width: 1400px) {
+    .search-container {
+        width: 100%;
+        gap: 1rem;
+        display: block;
+        padding: 5px 10px;
+
+    }
+}
+
+@media(max-width: 1200px ){
+    .search-bottom {
+        flex-direction: column !important;
+    }
+}
+
+/* ---product container-----*/
+.product-container {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.product-card {
+    position: relative;
+    background-color: white;
+    border: 1px solid var(--color-text);
+    border-radius: 8px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: auto;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-10px);
+}
+
+.product-image-placeholder {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    display: block;
+    overflow: hidden;
+}
+
+.product-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.product-card:hover .product-image-placeholder img {
+    scale: 1.1;
+    transition: 0.4s ease;
+}
+
+.badge-discount {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #d44352;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.product-name {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px 20px;
+    line-height: 1.4;
+    height: 2.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-details {
+    padding-left: 15px;
+    margin: 0 0 15px 20px;
+    flex-grow: 1;
+}
+
+.card-product > ul {
+    min-height: 120px;
+}
+
+.product-details li {
+    font-size: 15px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 10px;
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 15px 20px;
+}
+
+.general-sell-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    margin: 0 20px;
+}
+
+.rating {
+    background-color: #fff3e0;
+    border: 1px solid #f5c16c;
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #d48806;
+    font-weight: 500;
+}
+
+.sold {
+    color: #666;
+}
+
+.sold span {
+    font-weight: 500;
+    color: #333;
+}
+
+.action {
+    margin: 10px 20px;
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    justify-content: center;
+}
+
+.add-cart {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    margin-right: 15px;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-cart:hover {
+    background-color: blue;
+}
+
+.add-cart span {
+    display: flex;
+    justify-content: center;
+    padding: 0 8px 0 16px;
+    font-size: 22px;
+
+}
+
+.add-cart p {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0 16px 0 0;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.bt-detail {
+    display: flex;
+    border: 0.5px solid #E9E9E9;
+    flex: none;
+    font-size: 16px;
+    color: black;
+    border-radius: 7px;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    padding: 16px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.bt-detail:hover {
+    background-color: blue;
+    color: white;
+}
+
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    content: "";
+    cursor: pointer;
+}
+
+.relative-btn {
+    position: relative;
+    z-index: 2;
+}
+
+/* -----------pagination----------------------- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 30px 0;
+}
+
+.page-link {
+    text-decoration: none;
+    color: var(--fourth-color);
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
+}
+
+.page-link:hover:not(.active-page) {
+    background-color: #e9ecef;
+}
+
+.page-link.active-page {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.page-link.prev,
+.page-link.next {
+    color: var(--fourth-color);
+}
+
+.page-link.disabled {
+    color: #666666;
+}
+

@@ -1,0 +1,75 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'war'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    // JSTL
+    api 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+    api 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+    // MySQL
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
+
+    // Mail
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+
+    // Utils
+    implementation 'com.google.guava:guava:33.0.0-jre'
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+
+    // Servlet
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.1'
+
+    //cloudinary
+    implementation 'com.cloudinary:cloudinary-http44:1.39.0'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+description = 'TTW_BanMayInVaVatTuVanPhong'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+publishing {
+    publications {
+        create('maven', MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// dùng copy driver-mysql vào tomcat
+//tasks.register('copyMysqlDriverToTomcat', Copy) {
+//    from configurations.runtimeClasspath.filter {
+//        it.name.contains('mysql-connector-j')
+//    }
+//    into 'C:/Tomcat/lib'
+//}
+
+test {
+    useJUnitPlatform()
+}

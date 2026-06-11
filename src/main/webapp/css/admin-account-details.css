@@ -1,0 +1,134 @@
+.admin-customer-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 30px;
+    background: transparent;
+    padding: 0 10px;
+}
+
+.admin-customer-details-header h1 {
+    margin: 10px;
+    text-decoration: none;
+}
+
+.admin-customer-details-header a {
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    transition: transform 0.3s ease;
+}
+
+.admin-customer-details-header a:hover {
+    background-color: #165FF2;
+    color: #fff;
+}
+
+.customer-details-view {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.customer-details-view h3 {
+    margin-top: 0;
+    border-left: 5px solid var(--primary-color);
+    padding-left: 10px;
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.customer-details-view .info-section {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.customer-details-view .info-left, .info-right {
+    width: 45%;
+    line-height: 1.8;
+}
+
+.customer-details-view .status-active {
+    background-color: #28a745;
+    color: white;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.customer-details-view table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.customer-details-view thead {
+    background-color: #e8f0ff;
+}
+
+.customer-details-view th, td {
+    text-align: left;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.customer-details-view th {
+    font-weight: 600;
+    color: #333;
+}
+
+.customer-details-view tr:hover {
+    background-color: #f9f9f9;
+}
+
+.customer-details-view .status {
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 70px;
+}
+
+.customer-details-view .status-success {
+    background-color: #28a745;
+}
+
+.customer-details-view .status-cancel {
+    background-color: #e74c3c;
+}
+
+.status.pending {
+    background: #fff6e5;
+    color: #d39200;
+}
+
+.status.shipped {
+    background: #e7efff;
+    color: #2457e6;
+}
+
+.status.completed {
+    background: #e5f7ef;
+    color: #1e7d45;
+}
+
+.status.canceled {
+    background: #fde8e8;
+    color: #b91c1c;
+}

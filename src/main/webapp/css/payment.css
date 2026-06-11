@@ -1,0 +1,675 @@
+
+.payment {
+    margin: 70px auto;
+    max-width: 1200px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 15px;
+}
+
+.payment .title {
+    background: #f2f2f2;
+    padding: 20px 0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.payment .title h1 {
+    font-weight: 700;
+    font-size: 32px;
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.5px;
+    color: #165FF2;
+}
+
+/* Layout chính 2 cột */
+.payment .block-paymentDetails-finalBill {
+    display: flex;
+    gap: 30px;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+/*  PAYMENT DETAILS   */
+.payment .payment-details {
+    flex: 1.5;
+}
+
+.payment .payment-details span {
+    color: #d70018;
+    font-weight: bold;
+}
+
+.payment .payment-details h2 {
+    margin-bottom: 20px;
+    color: #165FF2;
+    border-bottom: 2px solid #165FF2;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/*   Form Input */
+.payment .payment-details .block-nation,
+.payment .payment-details .block-firstname,
+.payment .payment-details .block-lastname,
+.payment .payment-details .block-address,
+.payment .payment-details .block-addressCity,
+.payment .payment-details .block-postCode,
+.payment .payment-details .block-phone,
+.payment .payment-details .block-email,
+.payment .payment-details .block-note {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.payment .payment-details label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Style Input,Select,Textarea */
+.payment .payment-details input,
+.payment .payment-details select,
+.payment .payment-details textarea {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    padding: 10px 15px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    width: 100%; /* Full width */
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.payment .payment-details input:focus,
+.payment .payment-details select:focus,
+.payment .payment-details textarea:focus {
+    border-color: #165FF2;
+    box-shadow: 0 0 0 3px rgba(22, 95, 242, 0.1);
+}
+
+/* Layout hàng ngang cho các input đôi */
+.payment .block-firstname-lastname,
+.payment .block-addressCity-postCode,
+.payment .block-phone-email {
+    display: flex;
+    gap: 20px;
+}
+
+.payment .block-firstname,
+.payment .block-lastname,
+.payment .block-addressCity,
+.payment .block-postCode,
+.payment .block-phone,
+.payment .block-email {
+    flex: 1;
+}
+
+/* Ghi chú */
+.payment .block-note #note {
+    height: 80px;
+    resize: none;
+}
+
+/*   FINAL BILL && PAYMENT METHOD   */
+.payment .final-bill {
+    flex: 1;
+    background: #F9FAFB;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.payment .final-bill h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+    font-size: 20px;
+}
+
+/* Bảng đơn hàng */
+.payment .view-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.payment .view-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 500;
+}
+
+/*  cột Giá tiền */
+.payment .view-table th:last-child {
+    text-align: right;
+}
+
+.payment .view-table thead {
+    background: #165FF2;
+    color: #fff;
+}
+
+.payment .view-table tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+/* Line Tổng cộng */
+.payment .view-table tfoot #total th {
+    border-top: 2px solid #ccc;
+    padding: 15px 10px;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.payment .view-table tfoot #total th:last-child {
+    color: #d70018;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: right;
+    width: 50%;
+}
+
+/* Shipping & VAT */
+.payment .shiping p, .payment .vat p {
+    margin: 0;
+    font-weight: 600;
+}
+
+/*  PHƯƠNG THỨC THANH TOÁN   */
+.payment .pay-method {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.payment .method {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+/*   Hover */
+.payment .method:hover {
+    border-color: #165FF2;
+}
+
+/* IsActive   */
+.payment .method.active {
+    background-color: #eff6ff;
+    border-color: #165FF2;
+    border-left: 4px solid #165FF2;
+    box-shadow: 0 4px 6px rgba(22, 95, 242, 0.1);
+}
+
+/* Radio Button */
+.payment .method input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+    accent-color: #165FF2;
+}
+
+.payment .method h3 {
+    display: inline-block;
+    font-size: 15px;
+    margin: 0;
+    color: #333;
+}
+
+.payment .method.active h3 {
+    color: #165FF2;
+    font-weight: 700;
+}
+
+/* Nút Toggle: +,- */
+.payment .method .toggle-btn {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    border: none;
+    background: none;
+    color: #9ca3af;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.payment .method.active .toggle-btn {
+    color: #165FF2;
+    transform: rotate(45deg);
+}
+
+/*   PHẦN NỘI DUNG ẨN    */
+.payment .hidden-content, .payment .hidden {
+    display: none; /* Mặc định ẩn */
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #cbd5e1;
+    font-size: 14px;
+    color: #4b5563;
+    animation: fadeIn 0.4s ease;
+}
+
+.payment .method.active .hidden-content,
+.payment .method.active .hidden {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ảnh QR Momo */
+.payment #momo_qr {
+    display: block;
+    max-width: 100%;
+    width: 180px;
+    height: auto;
+    margin: 10px auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+/*   NÚT ĐẶT HÀNG   */
+.payment .order-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #165FF2, #0d47a1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    padding: 15px 0;
+    margin-top: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(22, 95, 242, 0.3);
+}
+
+.payment .order-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(22, 95, 242, 0.4);
+}
+
+/*  RESPONSIVE (MOBILE)   */
+@media (max-width: 992px) {
+    .payment .block-paymentDetails-finalBill {
+        flex-direction: column;
+    }
+
+    .payment .final-bill {
+        width: 100%;
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment .block-firstname-lastname,
+    .payment .block-addressCity-postCode,
+    .payment .block-phone-email {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .payment .title h1 {
+        font-size: 24px;
+    }
+}
+/*====== Payment Method ====*/
+
+
+/*  Mặc định ẩn tất cả nội dung con */
+.method .hidden,
+.method .hidden-content {
+    display: none !important;
+}
+
+/*   KHI CÓ CLASS ACTIVE -> HIỆN RA   */
+.method.active .hidden,
+.method.active .hidden-content {
+    display: block !important;
+    animation: fadeIn 0.5s ease;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+/*  Hiệu ứng hiện dần */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/*   Đổi màu nền khi Active  */
+.method.active {
+    background-color: #f0f9ff;
+    border-color: #165FF2;
+}
+
+/* Loading && disable btn checkout*/
+.order-btn:disabled,
+.order-btn.is-loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.order-btn.is-loading::after {
+    content: " ...";
+}
+
+.is-disabled-temp {
+    pointer-events: none;
+}
+
+
+input.is-invalid, select.is-invalid, textarea.is-invalid {
+    border: 1px solid #dc3545 !important;
+    background-image: none;
+}
+
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+input.is-invalid ~ .invalid-feedback,
+select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ===== VOUCHER ===== */
+
+.payment .voucher-wrapper{
+    margin-top:20px;
+    background:#fff;
+    border:1px solid #d1d5db;
+    border-radius:12px;
+    padding:18px;
+}
+
+.payment .voucher-header{
+    margin-bottom:14px;
+}
+
+.payment .voucher-header h3{
+    color:#165FF2;
+    font-size:17px;
+    margin:0;
+}
+
+.payment .voucher-input-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.payment .voucher-input-box input{
+    flex:1;
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:12px 14px;
+    outline:none;
+    font-size:14px;
+}
+
+.payment .voucher-input-box input:focus{
+    border-color:#165FF2;
+    box-shadow:0 0 0 3px rgba(22,95,242,0.1);
+}
+
+.payment .voucher-input-box button{
+    border:none;
+    background:#165FF2;
+    color:#fff;
+    border-radius:8px;
+    padding:0 18px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+    white-space:nowrap;
+}
+
+.payment .voucher-input-box button:hover{
+    background:#0d47a1;
+}
+
+.payment #voucherMessage{
+    display:block;
+    margin-bottom:12px;
+    font-size:13px;
+    font-weight:500;
+}
+
+.payment .voucher-dropdown{
+    position:relative;
+}
+
+.payment .voucher-selected{
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:14px;
+    background:#f9fafb;
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    transition:0.3s;
+}
+
+.payment .voucher-selected:hover{
+    border-color:#165FF2;
+}
+
+.payment .voucher-dropdown.active .voucher-selected{
+    border-color:#165FF2;
+}
+
+.payment .voucher-dropdown-menu{
+    position:absolute;
+    top:110%;
+    left:0;
+
+    width:100%;
+
+    background:#fff;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+
+    max-height:320px;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    display:none;
+
+    z-index:100;
+
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.payment .voucher-dropdown.active .voucher-dropdown-menu{
+    display:block;
+}
+
+.payment .voucher-dropdown-menu::-webkit-scrollbar{
+    width:6px;
+}
+
+.payment .voucher-dropdown-menu::-webkit-scrollbar-thumb{
+    background:#cbd5e1;
+    border-radius:20px;
+}
+
+.payment .voucher-item{
+    padding:14px 15px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    cursor:pointer;
+
+    border-bottom:1px solid #eee;
+
+    transition:0.25s;
+}
+
+.payment .voucher-item:last-child{
+    border-bottom:none;
+}
+
+.payment .voucher-item:hover{
+    background:#eff6ff;
+}
+
+.payment .voucher-item.active{
+    background:#eff6ff;
+    border-left:4px solid #165FF2;
+}
+
+.payment .voucher-item-left{
+    flex:1;
+}
+
+.payment .voucher-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+
+    margin-bottom:6px;
+}
+
+.payment .voucher-top h4{
+    margin:0;
+    font-size:15px;
+    color:#165FF2;
+}
+
+.payment .voucher-date{
+    font-size:12px;
+    color:#888;
+    white-space:nowrap;
+}
+
+.payment .voucher-item p{
+    margin:0;
+    font-size:13px;
+    color:#444;
+    line-height:1.5;
+}
+
+.payment .voucher-check{
+    margin-left:12px;
+    color:#165FF2;
+    font-size:18px;
+    display:none;
+}
+
+.payment .voucher-item.active .voucher-check{
+    display:block;
+}
+
+.payment .voucher-empty{
+    padding:20px;
+    text-align:center;
+    color:#888;
+    font-size:14px;
+}
+
+.shipping-method {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.shipping-method h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.shipping-provider-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    background: #eff6ff;
+
+    margin-left: 20px;
+    padding: 10px 0 10px 20px;
+    background-color: aliceblue;
+    border-radius: 10px;
+}
+
+.shipping-provider-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.shipping-provider-left i {
+    font-size: 22px;
+    color: #165ff2;
+}
+
+.shipping-provider-left strong {
+    display: block;
+    font-size: 15px;
+    color: #222;
+    margin-bottom: 4px;
+}
+
+.shipping-provider-left p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.shipping-provider-badge {
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #165ff2;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+}

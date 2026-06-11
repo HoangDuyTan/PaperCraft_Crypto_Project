@@ -1,0 +1,655 @@
+/*---------------------- INTRODUCE SECTION ----------------------*/
+.introduce-section {
+    margin-top: 100px;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    color: white;
+    border-radius: 3rem;
+    margin-inline: 20px;
+}
+
+.introduce-container {
+    position: relative;
+    z-index: 2;
+    padding-block: 8rem;
+    max-width: 80%;
+    margin-left: 60px;
+}
+
+.hero-slider.swiper {
+    max-width: none;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-slider .swiper-slide {
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-slider .swiper-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-slider .swiper-pagination {
+    bottom: 20px;
+    z-index: 3;
+}
+
+.hero-slider .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+    border-radius: 50%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-slider .swiper-pagination-bullet-active {
+    width: 30px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.introduce-section .introduce-container .introduce-title {
+    font-size: 55px;
+    font-weight: 750;
+    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    max-width: 850px;
+}
+
+.introduce-section .introduce-container .introduce-description {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    color: white;
+    max-width: 750px;
+}
+
+.introduce-section .introduce-container .introduce-btn {
+    display: flex;
+    gap: 20px;
+}
+
+.introduce-section .introduce-container .introduce-btn .btn {
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: opacity 0.3s;
+    text-decoration: none;
+    padding: 12px 25px;
+}
+
+.introduce-section .introduce-container .introduce-btn .btn-primary {
+    color: white;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+}
+
+.introduce-section .introduce-container .introduce-btn .btn-primary:hover {
+    background-color: blue;
+    transition: background-color 0.3s ease;
+}
+
+.introduce-section .introduce-container .introduce-btn .btn-secondary {
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid var(--color-text);
+}
+
+.introduce-section .introduce-container .introduce-btn .btn-secondary:hover {
+    background-color: lightgray;
+    transition: background-color 0.3s ease;
+}
+
+/*---------------------- PRODUCT CARD ----------------------*/
+.product-card {
+    position: relative;
+    background-color: white;
+    border: 1px solid var(--color-text);
+    border-radius: 8px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 320px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-10px);
+}
+
+.product-image-placeholder {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    display: block;
+    overflow: hidden;
+}
+
+.product-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.product-card:hover .product-image-placeholder img {
+    scale: 1.1;
+    transition: 0.4s ease;
+}
+
+.badge-discount {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #d44352;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.product-name {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px 20px;
+    line-height: 1.4;
+    height: 2.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-details {
+    padding-left: 15px;
+    margin: 0 0 15px 20px;
+    flex-grow: 1;
+}
+
+.card-product>ul {
+    min-height: 120px;
+}
+
+.product-details li {
+    font-size: 15px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 10px;
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 15px 20px;
+}
+
+.general-sell-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    margin: 0 20px;
+}
+
+.rating {
+    background-color: #fff3e0;
+    border: 1px solid #f5c16c;
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #d48806;
+    font-weight: 500;
+}
+
+.sold {
+    color: #666;
+}
+
+.sold span {
+    font-weight: 500;
+    color: #333;
+}
+
+.action {
+    margin: 10px 20px;
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    justify-content: center;
+}
+
+.add-cart {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    margin-right: 15px;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-cart:hover {
+    background-color: blue;
+}
+
+.add-cart span {
+    display: flex;
+    justify-content: center;
+    padding: 0 8px 0 16px;
+    font-size: 22px;
+}
+
+.add-cart p {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0 16px 0 0;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.bt-detail {
+    display: flex;
+    border: 0.5px solid #E9E9E9;
+    flex: none;
+    font-size: 16px;
+    color: black;
+    border-radius: 7px;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    padding: 16px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.bt-detail:hover {
+    background-color: blue;
+    color: white;
+}
+
+.view-all-btn-container {
+    margin: 50px;
+    text-align: center;
+}
+
+.view-all-btn-container .view-all-btn {
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    padding: 12px 30px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.view-all-btn-container .view-all-btn:hover {
+    background-color: blue;
+}
+
+.printer-product-section .swiper-pagination,
+.stationery-product-section .swiper-pagination {
+    position: relative;
+    bottom: auto;
+    margin-top: 30px;
+}
+
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    content: "";
+    cursor: pointer;
+}
+
+.relative-btn {
+    position: relative;
+    z-index: 2;
+}
+
+.swiper-button-prev {
+    left: 10px;
+}
+
+.swiper-button-next {
+    right: 10px;
+}
+
+/*---------------------- PRINTER SECTION ----------------------*/
+.printer-section {
+    padding: 70px 20px;
+    text-align: center;
+}
+
+.printer-section .printer-product-section {
+    padding: 30px;
+}
+
+/*---------------------- STATIONERY SECTION ----------------------*/
+.stationery-section {
+    padding: 70px 20px;
+    background-color: var(--third-color);
+    text-align: center;
+}
+
+.stationery-section .stationery-product-section {
+    padding: 30px;
+}
+
+/*---------------------- BENEFITS SECTION ----------------------*/
+.benefits-section {
+    padding: 70px 20px;
+    position: relative;
+    isolation: isolate;
+}
+
+.benefits-section::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    background-image: url('../images/benefit-img.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
+
+.benefits-container {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.benefit-card {
+    border: 1px solid var(--color-text);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-5px);
+}
+
+.benefit-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px auto;
+}
+
+.benefit-icon {
+    font-size: 28px;
+    color: var(--primary-color);
+}
+
+.benefit-title {
+    font-size: 25px;
+    font-weight: 500;
+    margin: 20px 0;
+}
+
+.benefit-description {
+    font-size: 15px;
+    color: gray;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 992px) {
+    .benefits-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*---------------------- CONTACT SECTION ----------------------*/
+.contact-section {
+    padding: 130px 100px 220px 100px;
+    background-color: var(--third-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.about-images {
+    position: relative;
+    min-height: 500px;
+}
+
+.about-images::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    left: -100px;
+    width: 450px;
+    height: 400px;
+    z-index: 1;
+    background-image: radial-gradient(circle, #B0BEC5 3px, transparent 3px);
+    background-size: 25px 25px;
+    opacity: 0.6;
+}
+
+.about-img-large {
+    position: absolute;
+    left: -20px;
+    width: 60%;
+    border-radius: 20px;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.about-img-small {
+    position: absolute;
+    right: 0;
+    width: 40%;
+    height: 50%;
+    border-radius: 20px;
+    z-index: 3;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.about-img-medium {
+    position: absolute;
+    bottom: 0;
+    top: 260px;
+    right: 0;
+    width: 55%;
+    height: 80%;
+    border-radius: 20px;
+    z-index: 3;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.about-content {
+    padding-left: 30px;
+    text-align: left;
+    min-height: 550px;
+}
+
+.about-content .section-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.about-content p {
+    font-size: 20px;
+    line-height: 1.7;
+    color: gray;
+    margin-bottom: 30px;
+}
+
+.about-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+}
+
+.about-features-list li {
+    font-size: 17px;
+    color: #333;
+    padding-left: 20px;
+    position: relative;
+    font-weight: 500;
+}
+
+.about-features-list li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.btn-dark-new {
+    background-color: black;
+    color: var(--color-text);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 12px 30px;
+    font-size: 17px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s;
+    display: inline-block;
+}
+
+.btn-dark-new:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+/*---------------------- CTA SECTION ----------------------*/
+.cta-section {
+    background-color: var(--primary-color);
+    padding: 70px 20px;
+}
+
+.cta-container {
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+}
+
+.cta-section .cta-container .section-subtitle {
+    color: var(--color-text);
+}
+
+.cta-btn {
+    display: inline-block;
+    background-color: white;
+    color: var(--primary-color);
+    padding: 15px 35px;
+    font-size: 16px;
+    font-weight: 400;
+    border-radius: 10px;
+    transition: background-color 0.3s, opacity 0.3s;
+    text-decoration: none;
+}
+
+.cta-btn:hover {
+    opacity: 0.9;
+}
+
+/*---------------------- SWIPER ----------------------*/
+.swiper {
+    max-width: 1200px;
+    overflow: hidden;
+    padding: 20px 60px;
+}
+
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-text);
+    opacity: 1;
+    border-radius: 50%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    width: 30px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+}
