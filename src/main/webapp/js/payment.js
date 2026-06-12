@@ -178,7 +178,7 @@ const districtNameInput = document.getElementById("districtName");
 const wardNameInput = document.getElementById("wardName");
 
 async function fetchGHNAddress(type, params = {}) {
-    const query = new URLSearchParams({ type, ...params });
+    const query = new URLSearchParams({type, ...params});
     const url = `${contextPath}/api/ghn/address?${query.toString()}`;
 
     const response = await fetch(url);
@@ -265,7 +265,7 @@ async function loadDistricts(provinceId, autoSelect = false) {
     wardNameInput.value = "";
 
     try {
-        const result = await fetchGHNAddress("district", { provinceId });
+        const result = await fetchGHNAddress("district", {provinceId});
 
         resetSelect(districtSelect, "Chọn quận/huyện");
 
@@ -306,7 +306,7 @@ async function loadWards(districtId, autoSelect = false) {
     wardNameInput.value = "";
 
     try {
-        const result = await fetchGHNAddress("ward", { districtId });
+        const result = await fetchGHNAddress("ward", {districtId});
         resetSelect(wardSelect, "Chọn phường/xã");
 
         if (!result.data || !Array.isArray(result.data)) {
@@ -435,6 +435,7 @@ async function calculateGHNFee() {
         }
     }
 }
+
 //chặn đặt hàng khi chưa tính được pghis GHN
 const checkoutForm = document.getElementById("checkoutForm");
 
@@ -457,3 +458,114 @@ if (checkoutForm) {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const checkoutForm = document.getElementById("checkoutForm");
+    const signatureModal = document.getElementById("signatureModal");
+    const hashPreview = document.getElementById("hashPreview");
+    const signatureTextarea = document.getElementById("signatureTextarea");
+    const copyHashBtn = document.getElementById("copyHashBtn");
+    const finishOrderBtn = document.getElementById("finishOrderBtn");
+    const cancelSignatureBtn = document.getElementById("cancelSignatureBtn");
+
+    const cryptoActionInput = document.getElementById("cryptoActionInput");
+    const hashValueInput = document.getElementById("hashValueInput");
+    const digitalSignatureInput = document.getElementById("digitalSignatureInput");
+
+    // check submit form. form sẽ chặn lại để lấy hàm băm
+    let allowRealSubmit = false;
+
+    //nếu không tháy form
+    if (!checkoutForm) {
+        return;
+    }
+
+    checkoutForm.addEventListener("submit", async function (event) {
+        if (allowRealSubmit) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const shippingFeeInput = document.getElementById("shippingFeeInput");
+        const districtId = document.getElementById("districtId");
+        const wardCode = document.getElementById("wardCode");
+
+        //validate đã chọn đủ Tỉnh/Huyện/Xã
+        if (!districtId?.value || !wardCode?.value) {
+            alert("Vui lòng chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và Phường/Xã.");
+            return;
+        }
+
+        //validate phí vận chuyển
+        if (!shippingFeeInput || shippingFeeInput.value === "") {
+            alert("Vui lòng chờ hệ thống tính phí vận chuyển.");
+            return;
+        }
+
+        //bắt đầu send thông tin đơn hàng lên server => gọp lại và băm thành chuỗi hash đại diện cho đơn hàng đó
+        cryptoActionInput.value = "prepare";
+
+        const formData = new FormData(checkoutForm);
+
+        try {
+            const response = await fetch(`${contextPath}/checkout`, {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || "Không thể tạo mã băm đơn hàng.");
+                return;
+            }
+
+            //điền giá trj hash vào ô
+            hashPreview.value = result.hashValue;
+            hashValueInput.value = result.hashValue;
+            signatureTextarea.value = "";
+
+            signatureModal.style.display = "flex";
+
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi hệ thống khi tạo mã băm đơn hàng.");
+        }
+    });
+
+    //user thực hiện ký số: bấm copy để lưu mã băm-> dùng usb,... để kí lên mã băm đó => user sẽ nhận được đoạn vb chữ ký điện tử
+    if (copyHashBtn) {
+        copyHashBtn.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(hashPreview.value);
+            alert("Đã copy mã băm.");
+        });
+    }
+
+    if (cancelSignatureBtn) {
+        cancelSignatureBtn.addEventListener("click", () => {
+            signatureModal.style.display = "none";
+        });
+    }
+
+    //chốt đơn chính thức
+    if (finishOrderBtn) {
+        finishOrderBtn.addEventListener("click", () => {
+            const signature = signatureTextarea.value.trim();
+
+            //verifi ô trống
+            if (!signature) {
+                alert("Vui lòng dán chữ ký điện tử trước khi hoàn tất đặt hàng.");
+                signatureTextarea.focus();
+                return;
+            }
+            // nếu đã có chứ kí => gán vào digitalSignatureInput để cbi gửi đi
+            digitalSignatureInput.value = signature;
+            cryptoActionInput.value = "place";
+
+            //hoàn tất => cho phép gửi form
+            allowRealSubmit = true;
+            checkoutForm.submit();
+        });
+    }
+});
