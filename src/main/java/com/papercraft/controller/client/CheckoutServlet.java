@@ -1,10 +1,12 @@
 package com.papercraft.controller.client;
 
+import com.google.gson.JsonObject;
 import com.papercraft.config.MomoConfig;
 import com.papercraft.config.VNPAYConfig;
 import com.papercraft.dao.*;
 import com.papercraft.model.*;
 import com.papercraft.service.OrderService;
+import com.papercraft.utils.OrderCryptoUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -183,6 +186,20 @@ public class CheckoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         request.setCharacterEncoding("UTF-8");
+        //fix bug
+//        System.out.println("===Test checkout sevlet running ====");
+//        System.out.println("cryptoAction= " + request.getParameter("cryptoAction")); --monng muốn ra "prepare"
+//        if ("prepare".equalsIgnoreCase(request.getParameter("cryptoAction"))) {
+//            response.setContentType("application/json;charset=UTF-8");
+//
+//            JsonObject json = new JsonObject();
+//            json.addProperty("success", true);
+//            json.addProperty("hashValue", "abcdtestPopUpHashWhenCheckout");
+//
+//            response.getWriter().write(json.toString());
+//            return;
+//        }
+
         HttpSession session = request.getSession();
 
         User user = (User) session.getAttribute("acc");
@@ -190,22 +207,28 @@ public class CheckoutServlet extends HttpServlet {
 
         String selectedIdsRaw = request.getParameter("selectedIds");
         Set<Integer> selectedIds = parseSelectedIdSet(selectedIdsRaw);
+        String cryptoAction = request.getParameter("cryptoAction");
+        String submittedHash = request.getParameter("hashValue");
+        String digitalSignature = request.getParameter("digitalSignature");
+        boolean isPrepare = "prepare".equalsIgnoreCase(cryptoAction);
 
         if (user == null || cart == null || cart.list().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            if (isPrepare) {
+                writeJsonError(response, "Giỏ hàng trống hoặc phiên đăng nhập đã hết hạn.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/cart");
+            }
             return;
         }
 
         if (selectedIds.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            if (isPrepare) {
+                writeJsonError(response, "Bạn chưa chọn sản phẩm để thanh toán.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/cart");
+            }
             return;
         }
-//        Cart selectedCart = new Cart();
-//        for (Product p : cart.list()) {
-//            if (selectedIds.contains(p.getId())) {
-//                selectedCart.put(p);
-//            }
-//        }
         ProductDAO productDAO = new ProductDAO();
         Cart selectedCart = new Cart();
 
@@ -217,14 +240,24 @@ public class CheckoutServlet extends HttpServlet {
             Product freshProduct = productDAO.getProductById(p.getId());
 
             if (freshProduct == null || freshProduct.getStockQuantity() <= 0) {
-                session.setAttribute("error", "Một số sản phẩm đã hết hàng. Vui lòng kiểm tra lại giỏ hàng.");
-                response.sendRedirect(request.getContextPath() + "/cart");
+                String message = "Một số sản phẩm đã hết hàng. Vui lòng kiểm tra lại giỏ hàng.";
+                if (isPrepare) {
+                    writeJsonError(response, message);
+                } else {
+                    session.setAttribute("error", message);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                }
                 return;
             }
 
             if (p.getQuantity() > freshProduct.getStockQuantity()) {
-                session.setAttribute("error", "Số lượng sản phẩm trong giỏ đã vượt quá tồn kho hiện tại.");
-                response.sendRedirect(request.getContextPath() + "/cart");
+                String message = "Số lượng sản phẩm trong giỏ đã vượt quá tồn kho hiện tại.";
+                if (isPrepare) {
+                    writeJsonError(response, message);
+                } else {
+                    session.setAttribute("error", message);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                }
                 return;
             }
 
@@ -232,7 +265,11 @@ public class CheckoutServlet extends HttpServlet {
             selectedCart.put(freshProduct);
         }
         if (selectedCart.list().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            if (isPrepare) {
+                writeJsonError(response, "Không tìm thấy sản phẩm hợp lệ để thanh toán.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/cart");
+            }
             return;
         }
 
@@ -247,59 +284,58 @@ public class CheckoutServlet extends HttpServlet {
         String paymentMethod = request.getParameter("paymentMethod");
         String shippingProvider = request.getParameter("shippingProvider");
         String shippingFeeRaw = request.getParameter("shippingFee");
-
         String voucherIdRaw = request.getParameter("voucherId");
-        if (voucherIdRaw != null && !voucherIdRaw.isBlank()) {
-            int voucherId = Integer.parseInt(voucherIdRaw);
-            session.setAttribute("voucherId", voucherId);
-        }
-
         StringBuilder fullAddressBuilder = new StringBuilder();
 
         if (address != null && !address.isBlank()) {
             fullAddressBuilder.append(address.trim());
         }
-
         if (wardName != null && !wardName.isBlank()) {
             fullAddressBuilder.append(", ").append(wardName.trim());
         }
-
         if (districtName != null && !districtName.isBlank()) {
             fullAddressBuilder.append(", ").append(districtName.trim());
         }
-
         if (city != null && !city.isBlank()) {
             fullAddressBuilder.append(", ").append(city.trim());
         }
-
         if (nation != null && !nation.isBlank()) {
             fullAddressBuilder.append(", ").append(nation.trim());
         }
-
-//        String fullAddress = fullAddressBuilder.toString();
-        String fullAddress = address + ", " + wardName + ", " + districtName + ", " + city + ", " + nation;
-
+        String fullAddress = fullAddressBuilder.toString();
         //parse phí ship
         BigDecimal shippingFee;
 
         try {
             if (shippingFeeRaw == null || shippingFeeRaw.isBlank()) {
-                request.setAttribute("error", "Vui lòng chọn địa chỉ để hệ thống tính phí vận chuyển.");
-                doGet(request, response);
+                if (isPrepare) {
+                    writeJsonError(response, "Vui lòng chọn địa chỉ để hệ thống tính phí vận chuyển.");
+                } else {
+                    request.setAttribute("error", "Vui lòng chọn địa chỉ để hệ thống tính phí vận chuyển.");
+                    doGet(request, response);
+                }
                 return;
             }
 
             shippingFee = new BigDecimal(shippingFeeRaw.trim());
 
             if (shippingFee.compareTo(BigDecimal.ZERO) < 0) {
-                request.setAttribute("error", "Phí vận chuyển không hợp lệ.");
-                doGet(request, response);
+                if (isPrepare) {
+                    writeJsonError(response, "Phí vận chuyển không hợp lệ.");
+                } else {
+                    request.setAttribute("error", "Phí vận chuyển không hợp lệ.");
+                    doGet(request, response);
+                }
                 return;
             }
 
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "Phí vận chuyển không hợp lệ.");
-            doGet(request, response);
+            if (isPrepare) {
+                writeJsonError(response, "Phí vận chuyển không hợp lệ.");
+            } else {
+                request.setAttribute("error", "Phí vận chuyển không hợp lệ.");
+                doGet(request, response);
+            }
             return;
         }
 
@@ -323,6 +359,89 @@ public class CheckoutServlet extends HttpServlet {
 
         if (paymentMethod == null || paymentMethod.isBlank()) {
             paymentMethod = "COD";
+        }
+
+        //Tạo dữ liệu đơn hàng chuẩn hóa hash_value để user copy sang tool ký số.
+        List<OrderItem> orderItemsForHash = new ArrayList<>();
+        BigDecimal subTotalBD = BigDecimal.ZERO;
+
+        for (Product product : selectedCart.list()) {
+            BigDecimal price = BigDecimal.valueOf(product.getPrice()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal discountRate = OrderCryptoUtil.normalizeDiscountRate(product.getDiscount());
+
+            OrderItem item = new OrderItem();
+            item.setProductId(product.getId());
+            item.setQuantity(product.getQuantity());
+            item.setPrice(price);
+            item.setDiscountRate(discountRate);
+            orderItemsForHash.add(item);
+
+            BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(product.getQuantity()));
+            subTotalBD = subTotalBD.add(lineTotal);
+        }
+        BigDecimal vatBD = subTotalBD.multiply(BigDecimal.valueOf(0.05)).setScale(0, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal grandTotalBD = subTotalBD.add(vatBD).add(shippingFee).setScale(2, RoundingMode.HALF_UP);
+
+        //lấy voucher tại thời điểm checkout (nếu không dùng voucher=> voucherCode= none, discountAmount= 0.00)
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        String voucherCode = "NONE";
+
+        if (voucherIdRaw != null && !voucherIdRaw.isBlank()) {
+            try {
+                int voucherId = Integer.parseInt(voucherIdRaw);
+                Voucher voucher = new VoucherDAO().getVoucherById(voucherId);
+                if (voucher != null) {
+                    String voucherError = voucher.validateString(grandTotalBD);
+                    if (voucherError == null) {
+                        voucherCode = voucher.getCode();
+                        discountAmount = voucher.calculateDiscount(grandTotalBD).setScale(2, RoundingMode.HALF_UP);
+                        grandTotalBD = voucher.applyDiscount(grandTotalBD).setScale(2, RoundingMode.HALF_UP);
+                        session.setAttribute("voucherId", voucherId);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "Voucher không hợp lệ.");
+                doGet(request, response);
+                return;
+            }
+        }
+
+        // Tạo chuỗi chuẩn hóa theo format:
+        // user_id:shipping_name:shipping_phone:shipping_address|voucher_code:discount_amount|total_price|product_id,quantity,price,discount_rate;...
+        String plainText = OrderCryptoUtil.buildOrderPlainText(user.getId(), fullname, phone, fullAddress, voucherCode, discountAmount, grandTotalBD, orderItemsForHash);
+        String serverHashValue = OrderCryptoUtil.sha256Hex(plainText);
+
+        //Nếu gọi bước prepare => chỉ trả hash_value về popup, chưa lưu đơn hàng vào db.
+        if ("prepare".equalsIgnoreCase(cryptoAction)) {
+            response.setContentType("application/json;charset=UTF-8");
+            JsonObject json = new JsonObject();
+            json.addProperty("success", true);
+            json.addProperty("hashValue", serverHashValue);
+            response.getWriter().write(json.toString());
+            return;
+        }
+
+        // Nếu gọi bước place => bắt buộc có chữ ký số mới cho lưu đơn hàng.
+        if ("place".equalsIgnoreCase(cryptoAction)) {
+            if (submittedHash == null || !submittedHash.equalsIgnoreCase(serverHashValue)) {
+                request.setAttribute("error", "Mã băm đơn hàng không khớp. Vui lòng thử lại.");
+                doGet(request, response);
+                return;
+            }
+
+            if (digitalSignature == null || digitalSignature.trim().isEmpty()) {
+                request.setAttribute("error", "Vui lòng nhập chữ ký điện tử trước khi đặt hàng.");
+                doGet(request, response);
+                return;
+            }
+            order.setHashValue(serverHashValue);
+            order.setSignature(digitalSignature.trim());
+            order.setVoucherCode(voucherCode);
+            order.setDiscountAmount(discountAmount);
+            order.setTotalPrice(grandTotalBD);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/cart");
+            return;
         }
 
         OrderService orderService = new OrderService();
@@ -421,35 +540,11 @@ public class CheckoutServlet extends HttpServlet {
                 String requestType = "captureWallet";
                 String extraData = "";
 
-                String rawHash = "accessKey=" + MomoConfig.accessKey +
-                        "&amount=" + amount +
-                        "&extraData=" + extraData +
-                        "&ipnUrl=" + ipnUrl +
-                        "&orderId=" + momoOrderId +
-                        "&orderInfo=" + orderInfo +
-                        "&partnerCode=" + MomoConfig.partnerCode +
-                        "&redirectUrl=" + returnUrl +
-                        "&requestId=" + requestId +
-                        "&requestType=" + requestType;
+                String rawHash = "accessKey=" + MomoConfig.accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + momoOrderId + "&orderInfo=" + orderInfo + "&partnerCode=" + MomoConfig.partnerCode + "&redirectUrl=" + returnUrl + "&requestId=" + requestId + "&requestType=" + requestType;
 
                 String signature = MomoConfig.hcmacSHA256(MomoConfig.secretKey, rawHash);
 
-                String jsonRequest = "{" +
-                        "\"partnerCode\":\"" + MomoConfig.partnerCode + "\"," +
-                        "\"partnerName\":\"PaperCraft\"," +
-                        "\"storeId\":\"MomoTestStore\"," +
-                        "\"requestId\":\"" + requestId + "\"," +
-                        "\"amount\":" + amount + "," +
-                        "\"orderId\":\"" + momoOrderId + "\"," +
-                        "\"orderInfo\":\"" + orderInfo + "\"," +
-                        "\"redirectUrl\":\"" + returnUrl + "\"," +
-                        "\"ipnUrl\":\"" + ipnUrl + "\"," +
-                        "\"lang\":\"vi\"," +
-                        "\"requestType\":\"" + requestType + "\"," +
-                        "\"autoCapture\":true," +
-                        "\"extraData\":\"" + extraData + "\"," +
-                        "\"signature\":\"" + signature + "\"" +
-                        "}";
+                String jsonRequest = "{" + "\"partnerCode\":\"" + MomoConfig.partnerCode + "\"," + "\"partnerName\":\"PaperCraft\"," + "\"storeId\":\"MomoTestStore\"," + "\"requestId\":\"" + requestId + "\"," + "\"amount\":" + amount + "," + "\"orderId\":\"" + momoOrderId + "\"," + "\"orderInfo\":\"" + orderInfo + "\"," + "\"redirectUrl\":\"" + returnUrl + "\"," + "\"ipnUrl\":\"" + ipnUrl + "\"," + "\"lang\":\"vi\"," + "\"requestType\":\"" + requestType + "\"," + "\"autoCapture\":true," + "\"extraData\":\"" + extraData + "\"," + "\"signature\":\"" + signature + "\"" + "}";
 
                 // Gọi API momo
                 URL url = new URL(MomoConfig.momo_Url);
@@ -514,5 +609,16 @@ public class CheckoutServlet extends HttpServlet {
             }
         }
         return result;
+    }
+
+    //hàm trả json lỗi
+    private void writeJsonError(HttpServletResponse response, String message) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("message", message);
+
+        response.getWriter().write(json.toString());
     }
 }

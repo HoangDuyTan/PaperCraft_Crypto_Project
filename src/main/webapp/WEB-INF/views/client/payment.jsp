@@ -331,8 +331,7 @@
                             </c:choose>
                         </div>
 
-                        <input type="hidden" name="voucherId" id="voucherId" value="${selectedVoucher.id}">
-                        <c:if test="${not empty successVoucher or not empty errorVoucher}">
+                        <input type="hidden" name="voucherId" id="voucherId" value="${not empty selectedVoucher ? selectedVoucher.id : ''}">                        <c:if test="${not empty successVoucher or not empty errorVoucher}">
                             <span style="display:block;margin-top:10px;font-size:13px;font-weight:500;color:${not empty successVoucher? '#16a34a': '#dc2626'};">
                                     ${not empty successVoucher? successVoucher: errorVoucher}
                             </span>

@@ -39,62 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    if (checkoutForm && orderBtn) {
-        let isSubmitting = false;
-        const originText = orderBtn.textContent.trim();
-
-        checkoutForm.addEventListener("submit", (e) => {
-            //Invalid Field
-            let isValid = true;
-            const requiredInputs = checkoutForm.querySelectorAll("[required]");
-
-            requiredInputs.forEach((input) => {
-                input.classList.remove("is-invalid"); // Xóa lỗi cũ
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.classList.add("is-invalid"); // Thêm class lỗi
-                }
-            });
-
-            if (!isValid) {
-                e.preventDefault(); // Ngăn submit
-                const firstError = checkoutForm.querySelector(".is-invalid");
-                if (firstError) firstError.focus();
-                return; // Dừng lại không chạy code xử lý loading bên dưới
-            }
-
-            if (isSubmitting) {
-                e.preventDefault();
-                return;
-            }
-            isSubmitting = true;
-            orderBtn.disabled = true;
-            orderBtn.classList.add("is-loading");
-            orderBtn.textContent = "ĐANG XỬ LÝ...";
-
-            const allInputs = checkoutForm.querySelectorAll("input, textarea, select,button");
-            allInputs.forEach((el) => {
-                    if (el !== orderBtn) {
-                        el.classList.add("is-disable-temp");
-                    }
-                }
-            )
-            ;
-
-        });
-        window.addEventListener("pageshow", () => {
-            isSubmitting = false;
-            orderBtn.disabled = false;
-            orderBtn.classList.remove("is-loading");
-            orderBtn.textContent = originText;
-
-            const allInputs = checkoutForm.querySelectorAll(".is-disabled-temp");
-            allInputs.forEach((el) => {
-                el.classList.remove("is-disabled-temp");
-            });
-        });
-    }
-
 
     //func for voucher
     const voucherDropdown = document.getElementById("voucherDropdown");
@@ -158,9 +102,7 @@ function updateBillUI(newShippingFee) {
     }
 
     if (shippingFeeText) {
-        shippingFeeText.textContent = shippingFee <= 0
-            ? "Đang cập nhật"
-            : formatCurrencyVND(shippingFee);
+        shippingFeeText.textContent = shippingFee <= 0 ? "Đang cập nhật" : formatCurrencyVND(shippingFee);
     }
 
     if (grandTotalText) {
@@ -436,29 +378,6 @@ async function calculateGHNFee() {
     }
 }
 
-//chặn đặt hàng khi chưa tính được pghis GHN
-const checkoutForm = document.getElementById("checkoutForm");
-
-if (checkoutForm) {
-    checkoutForm.addEventListener("submit", function (event) {
-        const shippingFeeInput = document.getElementById("shippingFeeInput");
-        const wardCode = document.getElementById("wardCode");
-        const districtId = document.getElementById("districtId");
-
-        if (!districtId?.value || !wardCode?.value) {
-            event.preventDefault();
-            alert("Vui lòng chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và Phường/Xã.");
-            return;
-        }
-
-        if (!shippingFeeInput || shippingFeeInput.value === "") {
-            event.preventDefault();
-            alert("Vui lòng chờ hệ thống tính phí vận chuyển.");
-            return;
-        }
-    });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     const checkoutForm = document.getElementById("checkoutForm");
     const signatureModal = document.getElementById("signatureModal");
@@ -472,71 +391,145 @@ document.addEventListener("DOMContentLoaded", () => {
     const hashValueInput = document.getElementById("hashValueInput");
     const digitalSignatureInput = document.getElementById("digitalSignatureInput");
 
-    // check submit form. form sẽ chặn lại để lấy hàm băm
+    const orderBtn = document.getElementById("orderBtn");
+    const originOrderBtnText = orderBtn ? orderBtn.textContent.trim() : "ĐẶT HÀNG";
+
     let allowRealSubmit = false;
 
-    //nếu không tháy form
     if (!checkoutForm) {
         return;
     }
 
+    function resetOrderButton() {
+        if (orderBtn) {
+            orderBtn.disabled = false;
+            orderBtn.classList.remove("is-loading");
+            orderBtn.textContent = originOrderBtnText;
+        }
+    }
+
+    function setOrderButtonLoading() {
+        if (orderBtn) {
+            orderBtn.disabled = true;
+            orderBtn.classList.add("is-loading");
+            orderBtn.textContent = "ĐANG XỬ LÝ...";
+        }
+    }
+
+    function validateRequiredFields() {
+        let isValid = true;
+        const requiredInputs = checkoutForm.querySelectorAll("[required]");
+
+        requiredInputs.forEach((input) => {
+            input.classList.remove("is-invalid");
+
+            if (!input.value.trim()) {
+                isValid = false;
+                input.classList.add("is-invalid");
+            }
+        });
+        if (!isValid) {
+            const firstError = checkoutForm.querySelector(".is-invalid");
+            if (firstError) {
+                firstError.focus();
+            }
+        }
+        return isValid;
+    }
+
     checkoutForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
         if (allowRealSubmit) {
             return;
         }
 
-        event.preventDefault();
+        if (!validateRequiredFields()) {
+            return;
+        }
 
         const shippingFeeInput = document.getElementById("shippingFeeInput");
         const districtId = document.getElementById("districtId");
         const wardCode = document.getElementById("wardCode");
 
-        //validate đã chọn đủ Tỉnh/Huyện/Xã
         if (!districtId?.value || !wardCode?.value) {
             alert("Vui lòng chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và Phường/Xã.");
             return;
         }
 
-        //validate phí vận chuyển
         if (!shippingFeeInput || shippingFeeInput.value === "") {
             alert("Vui lòng chờ hệ thống tính phí vận chuyển.");
             return;
         }
 
-        //bắt đầu send thông tin đơn hàng lên server => gọp lại và băm thành chuỗi hash đại diện cho đơn hàng đó
+        if (!cryptoActionInput || !hashValueInput || !digitalSignatureInput) {
+            alert("Thiếu input bảo mật trên form checkout. Vui lòng kiểm tra payment.jsp.");
+            return;
+        }
+
+        setOrderButtonLoading();
+
         cryptoActionInput.value = "prepare";
 
         const formData = new FormData(checkoutForm);
+        formData.set("cryptoAction", "prepare");
+
+        const requestBody = new URLSearchParams();
+
+        for (const [key, value] of formData.entries()) {
+            requestBody.append(key, value);
+        }
+
+        console.log("FORM cryptoAction =", requestBody.get("cryptoAction"));
+        console.log("FORM selectedIds =", requestBody.get("selectedIds"));
 
         try {
             const response = await fetch(`${contextPath}/checkout`, {
                 method: "POST",
-                body: formData
+                headers: {"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"},
+                body: requestBody.toString()
             });
 
-            const result = await response.json();
+            console.log("CHECKOUT STATUS:", response.status);
 
-            if (!result.success) {
-                alert(result.message || "Không thể tạo mã băm đơn hàng.");
+            const rawText = await response.text();
+            console.log("CHECKOUT RAW RESPONSE:", rawText);
+
+            let result;
+            try {
+                result = JSON.parse(rawText);
+            } catch (e) {
+                alert("Backend không trả JSON. Status = " + response.status + ". Xem Console để biết response thật.");
+                resetOrderButton();
                 return;
             }
 
-            //điền giá trj hash vào ô
+            if (!result.success) {
+                alert(result.message || "Không thể tạo mã băm đơn hàng.");
+                resetOrderButton();
+                return;
+            }
+
             hashPreview.value = result.hashValue;
             hashValueInput.value = result.hashValue;
             signatureTextarea.value = "";
 
             signatureModal.style.display = "flex";
+            resetOrderButton();
 
         } catch (error) {
             console.error(error);
             alert("Lỗi hệ thống khi tạo mã băm đơn hàng.");
+            resetOrderButton();
         }
-    });
+    }, true);
 
-    //user thực hiện ký số: bấm copy để lưu mã băm-> dùng usb,... để kí lên mã băm đó => user sẽ nhận được đoạn vb chữ ký điện tử
     if (copyHashBtn) {
         copyHashBtn.addEventListener("click", async () => {
+            if (!hashPreview.value) {
+                alert("Chưa có mã băm để copy.");
+                return;
+            }
             await navigator.clipboard.writeText(hashPreview.value);
             alert("Đã copy mã băm.");
         });
@@ -548,22 +541,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    //chốt đơn chính thức
     if (finishOrderBtn) {
         finishOrderBtn.addEventListener("click", () => {
             const signature = signatureTextarea.value.trim();
 
-            //verifi ô trống
             if (!signature) {
                 alert("Vui lòng dán chữ ký điện tử trước khi hoàn tất đặt hàng.");
                 signatureTextarea.focus();
                 return;
             }
-            // nếu đã có chứ kí => gán vào digitalSignatureInput để cbi gửi đi
             digitalSignatureInput.value = signature;
             cryptoActionInput.value = "place";
-
-            //hoàn tất => cho phép gửi form
             allowRealSubmit = true;
             checkoutForm.submit();
         });
