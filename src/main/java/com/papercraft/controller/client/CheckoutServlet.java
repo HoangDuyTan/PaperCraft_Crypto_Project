@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +32,8 @@ import java.util.*;
 @WebServlet("/checkout")
 public class CheckoutServlet extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(CheckoutServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -37,18 +41,21 @@ public class CheckoutServlet extends HttpServlet {
 
         // Kiểm tra Login
         if (session.getAttribute("acc") == null) {
+            logger.warn("GET /checkout request denied: Not logged into the system.");
             response.sendRedirect(request.getContextPath() + "/login?redirect=/checkout");
             return;
         }
 
         User user = (User) session.getAttribute("acc");
         if (user == null) {
+            logger.warn("GET /checkout request denied: User object in session is null.");
             response.sendRedirect(request.getContextPath() + "/login?redirect=/checkout");
             return;
         }
 
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null || cart.list().isEmpty()) {
+            logger.warn("User ID '{}' accessed checkout but the cart is empty or not initialized.", user.getId());
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
@@ -58,13 +65,17 @@ public class CheckoutServlet extends HttpServlet {
         Set<Integer> selectedIds = parseSelectedIdSet(selectedIdsRaw);
 
         if (selectedIds.isEmpty()) {
+            logger.warn("User ID '{}' accessed checkout but no products were selected (selectedIds is empty).", user.getId());
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
 
+        logger.info("User ID '{}' started the Checkout process for product IDs: '{}'", user.getId(), selectedIdsRaw);
+
         AddressDAO addressDAO = new AddressDAO();
         Address userAddr = addressDAO.findDefaultAddress(user.getId());
         request.setAttribute("addr", userAddr);
+        logger.debug("Loaded default address for User ID '{}': {}", user.getId(), userAddr != null ? userAddr.getId() : "Chưa có địa chỉ");
 
         UserVoucherDAO userVoucherDAO = new UserVoucherDAO();
         List<Voucher> vouchers = userVoucherDAO.getVouchersByUserId(user.getId());
@@ -72,16 +83,21 @@ public class CheckoutServlet extends HttpServlet {
 
         String voucherCode = request.getParameter("voucherCode");
         if (voucherCode != null && !voucherCode.trim().isEmpty()) {
+            logger.info("User ID '{}' is saving/applying Voucher code directly from code: '{}'", user.getId(), voucherCode);
             Voucher voucher = new VoucherDAO().getVoucherByCode(voucherCode.trim());
             if (voucher == null) {
+                logger.warn("Applying code failed: Voucher code '{}' does not exist.", voucherCode);
                 request.setAttribute("saveVoucherError", "Mã voucher không tồn tại");
             } else if (!voucher.isAvailable()) {
+                logger.warn("Applying code failed: Voucher ID '{}' ('{}') is currently unavailable.", voucher.getId(), voucherCode);
                 request.setAttribute("saveVoucherError", "Voucher hiện không khả dụng");
             } else {
                 boolean success = userVoucherDAO.addUserVoucher(user.getId(), voucher.getId());
                 if (!success) {
+                    logger.warn("Applying code failed: User ID '{}' already saved or used voucher ID '{}' previously.", user.getId(), voucher.getId());
                     request.setAttribute("saveVoucherError", "Bạn đã lưu voucher này rồi hoặc đã sử dụng");
                 } else {
+                    logger.info("User ID '{}' successfully saved and applied voucher ID '{}' ('{}') to the list.", user.getId(), voucher.getId(), voucherCode);
                     request.setAttribute("saveVoucherSuccess", "Áp dụng voucher thành công");
                     request.setAttribute("selectedVoucher", voucher);
                 }
@@ -103,11 +119,14 @@ public class CheckoutServlet extends HttpServlet {
             Product freshProduct = productDAO.getProductById(p.getId());
 
             if (freshProduct == null || freshProduct.getStockQuantity() <= 0) {
+                logger.warn("Stock check failed: Product ID {} does not exist or is out of stock.", p.getId());
                 hasInvalidStockItem = true;
                 continue;
             }
 
             if (p.getQuantity() > freshProduct.getStockQuantity()) {
+                logger.warn("Stock check failed: Product ID {} quantity in cart ({}) exceeds actual stock quantity ({}).",
+                        p.getId(), p.getQuantity(), freshProduct.getStockQuantity());
                 hasInvalidStockItem = true;
                 continue;
             }
@@ -127,6 +146,7 @@ public class CheckoutServlet extends HttpServlet {
             subTotal += total.doubleValue();
         }
         if (hasInvalidStockItem) {
+            logger.warn("Checkout process for User ID '{}' was cancelled and redirected to cart due to stock errors.", user.getId());
             session.setAttribute("error", "Một số sản phẩm đã hết hàng hoặc không đủ tồn kho. Vui lòng kiểm tra lại giỏ hàng.");
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
@@ -134,6 +154,7 @@ public class CheckoutServlet extends HttpServlet {
 
         //nếu selectedId gửi lên không khớp sp trong cart => không cho checkout(về cart )
         if (items.isEmpty()) {
+            logger.warn("No valid products found matching the selection of User ID '{}'. Returning to cart.", user.getId());
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
@@ -151,21 +172,25 @@ public class CheckoutServlet extends HttpServlet {
         if (voucherIdRaw != null && !voucherIdRaw.isBlank()) {
             try {
                 int voucherId = Integer.parseInt(voucherIdRaw);
+                logger.debug("Processing discount calculation for Voucher ID: '{}'", voucherId);
                 selectedVoucher = new VoucherDAO().getVoucherById(voucherId);
                 if (selectedVoucher != null) {
                     String voucherError = selectedVoucher.validateString(BigDecimal.valueOf(grandTotal));
 
                     if (voucherError != null) {
+                        logger.warn("Voucher ID '{}' is invalid for this order. Reason: '{}'", voucherId, voucherError);
                         request.setAttribute("errorVoucher", voucherError);
 
                     } else {
                         discountAmount = selectedVoucher.calculateDiscount(BigDecimal.valueOf(grandTotal));
                         grandTotal = selectedVoucher.applyDiscount(BigDecimal.valueOf(grandTotal)).toBigInteger().doubleValue();
+                        logger.info("Successfully applied Voucher ID '{}' for User ID '{}'. Discount amount: {}", voucherId, user.getId(), discountAmount);
                         request.setAttribute("successVoucher", "Áp dụng voucher thành công");
                         request.setAttribute("selectedVoucher", selectedVoucher);
                     }
                 }
             } catch (NumberFormatException e) {
+                logger.error("Invalid format for submitted parameter 'voucherId': '{}'", voucherIdRaw);
                 request.setAttribute("errorVoucher", "Voucher không hợp lệ");
             }
         }
@@ -179,6 +204,7 @@ public class CheckoutServlet extends HttpServlet {
 
         request.setAttribute("selectedIds", selectedIdsRaw);
 
+        logger.debug("Forwarding flow to payment.jsp for User ID '{}'", user.getId());
         request.getRequestDispatcher("/WEB-INF/views/client/payment.jsp").forward(request, response);
     }
 
@@ -207,12 +233,27 @@ public class CheckoutServlet extends HttpServlet {
 
         String selectedIdsRaw = request.getParameter("selectedIds");
         Set<Integer> selectedIds = parseSelectedIdSet(selectedIdsRaw);
+
+        if (user == null || cart == null || cart.list().isEmpty()) {
+            logger.warn("POST /checkout request denied: Invalid User or Cart information in session.");
+            response.sendRedirect(request.getContextPath() + "/cart");
+            return;
+        }
+
+        if (selectedIds.isEmpty()) {
+            logger.warn("POST /checkout request denied: Selected product IDs list is empty.");
+            response.sendRedirect(request.getContextPath() + "/cart");
+            return;
+        }
+        logger.info("User ID '{}' submitted order confirmation request for products: '{}'", user.getId(), selectedIdsRaw);
+
         String cryptoAction = request.getParameter("cryptoAction");
         String submittedHash = request.getParameter("hashValue");
         String digitalSignature = request.getParameter("digitalSignature");
         boolean isPrepare = "prepare".equalsIgnoreCase(cryptoAction);
 
-        if (user == null || cart == null || cart.list().isEmpty()) {
+        if (cart.list().isEmpty()) {
+            logger.warn("Giỏ hàng ảo xử lý thanh toán (selectedCart) rỗng đối với User ID '{}'.", user.getId());
             if (isPrepare) {
                 writeJsonError(response, "Giỏ hàng trống hoặc phiên đăng nhập đã hết hạn.");
             } else {
@@ -308,6 +349,7 @@ public class CheckoutServlet extends HttpServlet {
 
         try {
             if (shippingFeeRaw == null || shippingFeeRaw.isBlank()) {
+                logger.warn("Payment request denied: Shipping fee information not received from client.");
                 if (isPrepare) {
                     writeJsonError(response, "Vui lòng chọn địa chỉ để hệ thống tính phí vận chuyển.");
                 } else {
@@ -320,6 +362,7 @@ public class CheckoutServlet extends HttpServlet {
             shippingFee = new BigDecimal(shippingFeeRaw.trim());
 
             if (shippingFee.compareTo(BigDecimal.ZERO) < 0) {
+                logger.warn("Payment request denied: Received shipping fee is less than 0 ({})", shippingFeeRaw);
                 if (isPrepare) {
                     writeJsonError(response, "Phí vận chuyển không hợp lệ.");
                 } else {
@@ -330,6 +373,8 @@ public class CheckoutServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
+            logger.error("Error parsing numeric shipping fee from raw value: '{}'", shippingFeeRaw);
+
             if (isPrepare) {
                 writeJsonError(response, "Phí vận chuyển không hợp lệ.");
             } else {
@@ -379,6 +424,7 @@ public class CheckoutServlet extends HttpServlet {
             BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(product.getQuantity()));
             subTotalBD = subTotalBD.add(lineTotal);
         }
+
         BigDecimal vatBD = subTotalBD.multiply(BigDecimal.valueOf(0.05)).setScale(0, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
         BigDecimal grandTotalBD = subTotalBD.add(vatBD).add(shippingFee).setScale(2, RoundingMode.HALF_UP);
 
@@ -400,6 +446,7 @@ public class CheckoutServlet extends HttpServlet {
                     }
                 }
             } catch (NumberFormatException e) {
+                logger.error("Error parsing voucherIdRaw in POST flow: {}", voucherIdRaw);
                 request.setAttribute("error", "Voucher không hợp lệ.");
                 doGet(request, response);
                 return;

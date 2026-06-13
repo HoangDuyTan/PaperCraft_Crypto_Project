@@ -9,25 +9,33 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "BlogPostServlet", value = "/blog-post")
 public class BlogPostServlet extends HttpServlet {
+
+    private static final Logger logger = LoggerFactory.getLogger(BlogPostServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String idParam = request.getParameter("id");
         if (idParam == null) {
+            logger.warn("Request to view blog post details denied: Empty 'id' parameter.");
             response.sendRedirect("blog");
             return;
         }
         int id = Integer.parseInt(idParam);
+        logger.info("Visitor is loading detailed content for blog post ID: {}", id);
 
         BlogDao blogDao = new BlogDao();
         Blog blog = blogDao.getBlogById(id);
 
         if (blog == null) {
+            logger.warn("Blog post ID '{}' does not exist in the database system.", id);
             response.sendRedirect("blog");
             return;
         }
@@ -37,9 +45,11 @@ public class BlogPostServlet extends HttpServlet {
             User user = (User) session.getAttribute("acc");
 
             if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+                logger.warn("Security warning: Regular user (or guest) attempted to access unapproved blog post ID: {}", id);
                 response.sendRedirect("home");
                 return;
             }
+            logger.info("Admin ID '{}' is previewing unapproved blog post ID: {}", user.getId(), id);
         }
 
         List<Blog> relatedBlogs = blogDao.getRelatedBlogs(blog.getTypeBlog(), id);

@@ -6,26 +6,38 @@ import com.papercraft.model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "OrderHistoryServlet", value = "/order-history")
 public class OrderHistoryServlet extends HttpServlet {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderHistoryServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("acc");
 
         if (user == null) {
+            logger.warn("Request to access order history denied: User is not logged into the system.");
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
+        logger.info("Received request to load order history from User ID: '{}', Email: '{}'", user.getId(), user.getEmail());
+
         OrderDAO orderDAO = new OrderDAO();
+        logger.debug("Querying order list from DB for User ID: '{}'...", user.getId());
         List<Order> orderList = orderDAO.getOrdersByUserId(user.getId());
+
+        logger.info("Successfully loaded history list. Found {} orders for User ID: '{}'", orderList.size(), user.getId());
         request.setAttribute("orderList", orderList);
 
+        logger.debug("Forwarding flow to order-history.jsp display interface");
         request.getRequestDispatcher("/WEB-INF/views/client/order-history.jsp").forward(request, response);
     }
 

@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -16,6 +18,8 @@ import java.util.Set;
 
 @WebServlet("/api/ghn/fee")
 public class GHNFeeServlet extends HttpServlet {
+
+    private static final Logger logger = LoggerFactory.getLogger(GHNFeeServlet.class);
     private final GHNFeeService ghnFeeService = new GHNFeeService();
 
     @Override
@@ -28,11 +32,14 @@ public class GHNFeeServlet extends HttpServlet {
         try {
             String districtIdRaw = request.getParameter("districtId");
             String wardCode = request.getParameter("wardCode");
-            String selectedIdsRaw= request.getParameter("selectedIds");
-            Set<Integer> selectedIds= parseSelectedIdSet(selectedIdsRaw);
+            String selectedIdsRaw = request.getParameter("selectedIds");
+            logger.info("Received GHN shipping fee calculation API request. districtId: '{}', wardCode: '{}', selectedIds: '{}'",
+                    districtIdRaw, wardCode, selectedIdsRaw);
+            Set<Integer> selectedIds = parseSelectedIdSet(selectedIdsRaw);
 
             if (districtIdRaw == null || districtIdRaw.isBlank()
                     || wardCode == null || wardCode.isBlank()) {
+                logger.warn("Fee calculation request rejected: Missing required parameter 'districtId' or 'wardCode'.");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"code\":400,\"message\":\"districtId and wardCode are required\"}");
                 return;
@@ -44,9 +51,12 @@ public class GHNFeeServlet extends HttpServlet {
             Cart cart = session == null ? null : (Cart) session.getAttribute("cart");
 
             if (cart == null || cart.list().isEmpty()) {
+                logger.warn("Fee calculation request failed: Cart in session does not exist or is empty.");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"code\":400,\"message\":\"Giỏ hàng trong session đang rỗng. Vui lòng thêm sản phẩm và vào checkout lại.\"}");                return;
+                response.getWriter().write("{\"code\":400,\"message\":\"Giỏ hàng trong session đang rỗng. Vui lòng thêm sản phẩm và vào checkout lại.\"}");
+                return;
             }
+            logger.debug("Selected product IDs for fee calculation (size): {}", selectedIds.size());
 
             int totalQuantity = 0;
             double subTotal = 0;
@@ -55,28 +65,29 @@ public class GHNFeeServlet extends HttpServlet {
                 if (product == null || product.getQuantity() == null || product.getQuantity() <= 0) {
                     continue;
                 }
-                if (!selectedIds.isEmpty() && !selectedIds.contains(product.getId())){
+                if (!selectedIds.isEmpty() && !selectedIds.contains(product.getId())) {
                     continue;
                 }
                 totalQuantity += product.getQuantity();
                 subTotal += product.getPrice() * product.getQuantity();
-
             }
 
             if (totalQuantity <= 0) {
+                logger.warn("No valid products selected in the cart to calculate parcel weight.");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"code\":400,\"message\":\"Không tìm thấy sản phẩm được chọn để tính phí vận chuyển.\"}");                return;
+                response.getWriter().write("{\"code\":400,\"message\":\"Không tìm thấy sản phẩm được chọn để tính phí vận chuyển.\"}");
+                return;
             }
 
-
-             //Tạm tính dùng mỗi sp 500g và 30 x 20 x 10 cm
+            //Tạm tính dùng mỗi sp 500g và 30 x 20 x 10 cm
             int weight = Math.max(totalQuantity * 500, 500);
             int length = 30;
             int width = 20;
             int height = 10;
 
-             //GHN giới hạn insurance_value an toàn => cap tối đa 5.000.000.
+            //GHN giới hạn insurance_value an toàn => cap tối đa 5.000.000.
             int insuranceValue = (int) Math.min(Math.round(subTotal), 5_000_000);
+            logger.debug("GHN parcel parameters -> Weight: {}g, Declared insurance value: {} VND", weight, insuranceValue);
 
             String ghnResponse = ghnFeeService.calculateFee(
                     toDistrictId,
@@ -89,13 +100,13 @@ public class GHNFeeServlet extends HttpServlet {
             );
 
             response.getWriter().write(ghnResponse);
-
+            logger.info("Successfully sent GHN shipping fee data response back to the client.");
         } catch (NumberFormatException e) {
+            logger.error("An error occurred: ", e);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("{\"code\":400,\"message\":\"districtId is invalid\"}");
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An unexpected critical error occurred while processing GHN shipping fee: ", e);
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
