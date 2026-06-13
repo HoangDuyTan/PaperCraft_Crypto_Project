@@ -20,6 +20,11 @@ public class Order implements Serializable {
     public Timestamp createdAt;
     public List<OrderItem> orderItems;
 
+    private String hashValue;
+    private String signature;
+    private String voucherCode;
+    private BigDecimal discountAmount;
+
     public Order() {
     }
 
@@ -133,5 +138,37 @@ public class Order implements Serializable {
 
     public void setShippingProvider(String shippingProvider) {
         this.shippingProvider = shippingProvider;
+    }
+
+    public String getHashValue() {
+        return hashValue;
+    }
+
+    public void setHashValue(String hashValue) {
+        this.hashValue = hashValue;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getVoucherCode() {
+        return voucherCode;
+    }
+
+    public void setVoucherCode(String voucherCode) {
+        this.voucherCode = voucherCode;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

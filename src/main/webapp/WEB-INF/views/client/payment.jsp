@@ -41,9 +41,12 @@
         <input type="hidden" id="vatValue" value="${vat}">
         <input type="hidden" id="discountValue" value="${discountAmount}">
 
+        <input type="hidden" name="cryptoAction" id="cryptoActionInput" value="prepare">
+        <input type="hidden" name="hashValue" id="hashValueInput">
+        <input type="hidden" name="digitalSignature" id="digitalSignatureInput">
+
         <%-- Dlieu vận chuyển gửi về CheckoutServlet --%>
-<%--        <input type="hidden" name="shippingFee" id="shippingFeeInput" value="${shippingFee}">--%>
-            <input type="hidden" name="shippingFee" id="shippingFeeInput" value="">
+        <input type="hidden" name="shippingFee" id="shippingFeeInput" value="">
 
         <div class="block-paymentDetails-finalBill">
 
@@ -230,7 +233,7 @@
                 <div class="shipping-method">
                     <h3>Vận chuyển:</h3>
 
-                    <div class="shipping-provider-box" >
+                    <div class="shipping-provider-box">
                         <div class="shipping-provider-left">
                             <i class="fa-solid fa-truck-fast"></i>
 
@@ -328,13 +331,41 @@
                             </c:choose>
                         </div>
 
-                        <input type="hidden" name="voucherId" id="voucherId" value="${selectedVoucher.id}">
-                        <c:if test="${not empty successVoucher or not empty errorVoucher}">
+                        <input type="hidden" name="voucherId" id="voucherId" value="${not empty selectedVoucher ? selectedVoucher.id : ''}">                        <c:if test="${not empty successVoucher or not empty errorVoucher}">
                             <span style="display:block;margin-top:10px;font-size:13px;font-weight:500;color:${not empty successVoucher? '#16a34a': '#dc2626'};">
                                     ${not empty successVoucher? successVoucher: errorVoucher}
                             </span>
                         </c:if>
 
+                    </div>
+                </div>
+
+                <div id="signatureModal" class="signature-modal" style="display:none;">
+                    <div class="signature-modal-content">
+                        <h3>Xác nhận chữ ký số đơn hàng</h3>
+                        <p>
+                            Hệ thống đã tạo mã băm SHA-256 từ thông tin đơn hàng.
+                            Hãy copy mã này sang Tool ký số, ký bằng Private Key, sau đó dán chữ ký vào ô bên dưới.
+                        </p>
+                        <label>Mã băm đơn hàng</label>
+                        <textarea id="hashPreview" readonly rows="3"></textarea>
+
+                        <button type="button" id="copyHashBtn">
+                            Copy mã băm
+                        </button>
+
+                        <label>Nhập chữ ký điện tử</label>
+                        <textarea id="signatureTextarea" rows="5" placeholder="Dán chữ ký số từ Tool rời vào đây"></textarea>
+
+                        <div class="signature-actions">
+                            <button type="button" id="cancelSignatureBtn">
+                                Hủy
+                            </button>
+
+                            <button type="button" id="finishOrderBtn">
+                                Hoàn tất đặt hàng
+                            </button>
+                        </div>
                     </div>
                 </div>
 

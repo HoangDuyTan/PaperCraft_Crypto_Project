@@ -80,14 +80,14 @@ public class OrderItemDAO {
     }
 
     public void insertOrderItem(Connection conn, List<OrderItem> oi) {
-        String sql = "INSERT INTO order_item (order_id, product_id, quantity, price) VALUES (?,?,?,?)";
-
+        String sql = "INSERT INTO order_item (order_id, product_id, quantity, price, discount_rate) VALUES (?,?,?,?,?)";
         try (PreparedStatement ps = conn.prepareStatement(sql);) {
             for (OrderItem item : oi) {
                 ps.setInt(1, item.getOrderId());
                 ps.setInt(2, item.getProductId());
                 ps.setInt(3, item.getQuantity());
                 ps.setBigDecimal(4, item.getPrice());
+                ps.setBigDecimal(5, item.getDiscountRate());
                 ps.addBatch();
             }
             ps.executeBatch();

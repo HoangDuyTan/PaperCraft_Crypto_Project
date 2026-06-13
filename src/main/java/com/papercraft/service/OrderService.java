@@ -54,6 +54,10 @@ public class OrderService {
                 item.setProductId(product.getId());
                 item.setQuantity(product.getQuantity());
                 item.setPrice(price);
+
+                BigDecimal discountRate = com.papercraft.utils.OrderCryptoUtil.normalizeDiscountRate(product.getDiscount());
+                item.setDiscountRate(discountRate);
+
                 item.setTotal(total);
                 item.setProduct(product);
 
@@ -73,10 +77,23 @@ public class OrderService {
             double vat = Math.round(subTotal * 0.05);
             double grandTotal = Math.round(subTotal + shippingFee + vat);
 
+            BigDecimal discountAmount = order.getDiscountAmount();
+
+            if (discountAmount == null || discountAmount.compareTo(BigDecimal.ZERO) < 0) {
+                discountAmount = BigDecimal.ZERO;
+            }
+            BigDecimal grandTotalBD = BigDecimal.valueOf(Math.round(subTotal + shippingFee + vat)).subtract(discountAmount)
+                    .setScale(2, java.math.RoundingMode.HALF_UP);
+            if (grandTotalBD.compareTo(BigDecimal.ZERO) < 0) {
+                grandTotalBD = BigDecimal.ZERO;
+            }
+
+
             order.setUserId(user.getId());
             order.setStatus("pending");
             order.setShippingFee(BigDecimal.valueOf(shippingFee));
-            order.setTotalPrice(BigDecimal.valueOf(grandTotal));
+            order.setTotalPrice(grandTotalBD);
+            order.setDiscountAmount(discountAmount);
 
             if (order.getShippingProvider() == null || order.getShippingProvider().isBlank()) {
                 order.setShippingProvider("GHN");
