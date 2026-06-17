@@ -27,6 +27,31 @@
 
     <!-- ===========main========= -->
     <main class="admin-main-content">
+        <c:if test="${not empty order.signature}">
+            <div class="security-status-box" style="padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px; font-size: 18px;">Trạng thái toàn vẹn (Chữ ký số RSA)</h3>
+                <c:choose>
+                    <c:when test="${isSignatureValid}">
+                        <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 12px; border-radius: 4px;">
+                            <i class="fa-solid fa-shield-check" style="font-size: 18px; margin-right: 5px;"></i>
+                            <strong>HỢP LỆ:</strong> Đơn hàng an toàn, dữ liệu toàn vẹn. Khớp chữ ký số!
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 18px; margin-right: 5px;"></i>
+                            <strong>CẢNH BÁO BẢO MẬT:</strong> ${securityWarning}
+                            <ul style="margin-top: 10px; font-size: 14px; padding-left: 20px;">
+                                <li><strong>Mã băm lưu trong hóa đơn:</strong> ${order.hashValue}</li>
+                                <li><strong>Mã băm hiện tại (sau khi bị đổi):</strong> ${currentCalculatedHash}</li>
+                            </ul>
+                            <p style="margin-top: 5px; font-size: 14px;"><em>*Hệ thống phát hiện dữ liệu trong Database không khớp với chữ ký gốc do khách hàng tạo!</em></p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </c:if>
+
         <section class="order-detail">
 
             <!-- -------------UP--------- -->
@@ -123,6 +148,7 @@
                                                                         pattern="#,###"/> đ</span>
                             </p>
                             <p> Thuế(VAT): <span>Đã bao gồm</span></p>
+                            <p>Chữ ký <span>${order.signature}</span></p>
                             <h3>Tổng Cộng: <span><fmt:formatNumber value="${order.totalPrice}"
                                                                    pattern="#,###"/> đ</span></h3>
 

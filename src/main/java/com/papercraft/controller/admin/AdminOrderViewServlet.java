@@ -3,6 +3,8 @@ package com.papercraft.controller.admin;
 import com.papercraft.dao.*;
 import com.papercraft.model.*;
 import com.papercraft.model.enums.NotificationType;
+import com.papercraft.service.OrderVerificationService;
+import com.papercraft.utils.OrderCryptoUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -125,12 +127,35 @@ public class AdminOrderViewServlet extends HttpServlet {
         OrderItemDAO orderItemDAO = new OrderItemDAO();
         List<OrderItem> orderItems = orderItemDAO.getItemByOrderId(id);
         order.setOrderItems(orderItems);
-
-        User user = new UserDAO().getBasicInfoById(order.getUserId());
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.getBasicInfoById(order.getUserId());
 
         Payment payment = new PaymentDAO().getPaymentByOrderId(id);
         logger.debug("Successfully loaded all data for order ID {}. Product count: {}, Customer: '{}'",
                 id, (orderItems != null ? orderItems.size() : 0), (user != null ? user.getEmail() : "N/A"));
+
+        // ATBM: Xác thực chữ ký số
+        boolean isSignatureValid = false;
+        String currentHash = "";
+
+        String[] activeKeyInfo = userDAO.getActivedKey(order.getUserId());
+        String publicKey = (activeKeyInfo != null) ? activeKeyInfo[0] : null;
+
+        if (order.getSignature() != null && !order.getSignature().isEmpty() && publicKey != null) {
+            String plainText = OrderCryptoUtil.buildOrderPlainText(user.getId(), order.getShippingName(), order.getShippingPhone(), order.getShippingAddress(), order.getVoucherCode(), order.getDiscountAmount(), order.getTotalPrice(), orderItems);
+            currentHash = OrderCryptoUtil.sha256Hex(plainText);
+
+            OrderVerificationService verifyService = new OrderVerificationService();
+            isSignatureValid = verifyService.verifySignature(currentHash, order.getSignature(), publicKey);
+        }
+
+        request.setAttribute("isSignatureValid", isSignatureValid);
+        request.setAttribute("currentCalculatedHash", currentHash);
+
+        if (!isSignatureValid && order.getSignature() != null) {
+            request.setAttribute("securityWarning", "CẢNH BÁO: Dữ liệu đơn hàng đã bị thay đổi trái phép hoặc chữ ký giả mạo!");
+        }
+        // =========================
 
         request.setAttribute("order", order);
         request.setAttribute("orderItems", orderItems);
