@@ -2,13 +2,18 @@ package com.papercraft.controller.admin;
 
 import com.papercraft.dao.ImageDAO;
 import com.papercraft.dao.ProductDAO;
+import com.papercraft.model.Product;
 import com.papercraft.service.CloudinaryService;
 import com.papercraft.utils.DBConnect;
-import com.papercraft.model.Product;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,12 +31,17 @@ import java.util.List;
 )
 public class AdminProductEdit extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminProductEdit.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String idParam = request.getParameter("id");
+        logger.debug("Received GET request to AdminProductEdit. Raw ID parameter: '{}'", idParam);
+
         if (idParam == null || idParam.isEmpty()) {
+            logger.warn("Edit request rejected: ID parameter is empty.");
             response.sendRedirect(request.getContextPath() + "/admin/admin-product");
             return;
         }
@@ -44,6 +54,7 @@ public class AdminProductEdit extends HttpServlet {
             Product product = productDAO.getProductForEditById(id);
 
             if (product == null) {
+                logger.warn("No product found in the system matching ID: {}", id);
                 response.sendRedirect(request.getContextPath() + "/admin/admin-product?msg=not_found");
                 return;
             }
@@ -53,11 +64,13 @@ public class AdminProductEdit extends HttpServlet {
             ProductDAO pDaoForImg = new ProductDAO();
             List<String> sideImages = pDaoForImg.getAllImageOfProduct(id);
             product.setImageList(sideImages);
+            logger.debug("Successfully loaded product information for ID {}. Number of gallery images: {}", id, sideImages.size());
 
             request.setAttribute("product", product);
             request.getRequestDispatcher("/WEB-INF/views/admin/admin-product-edit.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
+            logger.error("Invalid 'id' parameter format passed to URL (Not a number): '{}'", idParam);
             response.sendRedirect(request.getContextPath() + "/admin/admin-product");
         }
     }
@@ -68,14 +81,17 @@ public class AdminProductEdit extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         Connection conn = null;
+        String idParam = request.getParameter("id");
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            int id = Integer.parseInt(idParam);
+            logger.info("Received update request (POST) for product information. Raw ID: '{}'", id);
 
             ProductDAO dao = new ProductDAO();
             Product old = dao.getProductForEditById(id); // Lấy sản phẩm cũ để check
 
             if (old == null) {
+                logger.warn("Update failed: Product ID {} does not exist in the database.", id);
                 response.sendRedirect(request.getContextPath() + "/admin/admin-product?msg=not_found");
                 return;
             }
@@ -112,6 +128,7 @@ public class AdminProductEdit extends HttpServlet {
 
             // Update thông tin text
             boolean isUpdated = dao.updateProduct(updated);
+            logger.info("Text information update result for Product ID {}: {}", id, isUpdated);
 
 //            //    ẢNH
 //            String uploadDirPath = getServletContext().getRealPath("/images/upload");
@@ -127,26 +144,33 @@ public class AdminProductEdit extends HttpServlet {
             if (thumbPart != null && thumbPart.getSize() > 0 && thumbPart.getSubmittedFileName() != null && !thumbPart.getSubmittedFileName().isBlank()) {
                 String fileName = Paths.get(thumbPart.getSubmittedFileName()).getFileName().toString();
                 File tempFile = File.createTempFile("product_thumb_", ".tmp");
+
+                logger.debug("New thumbnail detected. Creating temporary file: {}", tempFile.getAbsolutePath());
                 try {
                     thumbPart.write(tempFile.getAbsolutePath());
                     CloudinaryService.upload(tempFile, fileName);
                     updateThumbnailDirectly(conn, id, fileName);
+                    logger.info("Successfully updated new thumbnail '{}' to Cloudinary and database.", fileName);
                 } finally {
-                    tempFile.delete();
+                    boolean isDeleted = tempFile.delete();
+                    if (!isDeleted) {
+                        logger.warn("Failed to release temporary file at: {}", tempFile.getAbsolutePath());
+                    }
                 }
             }
 
             // GALLERY
             List<Part> galleryParts = getPartsByName(request, "gallery");
             boolean hasNewGallery = false;
-            for(Part p : galleryParts) {
-                if(p.getSize() > 0 && p.getSubmittedFileName() != null && !p.getSubmittedFileName().isEmpty()) {
+            for (Part p : galleryParts) {
+                if (p.getSize() > 0 && p.getSubmittedFileName() != null && !p.getSubmittedFileName().isEmpty()) {
                     hasNewGallery = true;
                     break;
                 }
             }
 
             if (hasNewGallery) {
+                logger.info("Detected request to refresh all gallery images for product ID: {}", id);
                 List<String> savedGalleryNames = new ArrayList<>();
                 for (Part p : galleryParts) {
                     if (p != null && p.getSize() > 0) {
@@ -158,35 +182,48 @@ public class AdminProductEdit extends HttpServlet {
                             CloudinaryService.upload(tempFile, fileName);
                             savedGalleryNames.add(fileName);
                         } finally {
-                            tempFile.delete();
+                            boolean isDeleted = tempFile.delete();
+                            if (!isDeleted) {
+                                logger.warn("Failed to delete gallery temporary file at: {}", tempFile.getAbsolutePath());
+                            }
                         }
                     }
                 }
 
                 if (!savedGalleryNames.isEmpty()) {
                     if (savedGalleryNames.size() > 5) {
+                        logger.warn("Number of submitted gallery images exceeds the limit ({} images). Truncating to the first 5 images.", savedGalleryNames.size());
                         savedGalleryNames = savedGalleryNames.subList(0, 5);
                     }
                     // Xóa ảnh phụ cũ
                     deleteSideImagesDirectly(conn, id);
+                    logger.debug("Deleted old gallery images in the database for product ID {}", id);
                     // Thêm ảnh phụ mới
                     insertSideImagesDirectly(conn, id, savedGalleryNames);
+                    logger.info("Successfully synchronized and added {} new gallery images to the database.", savedGalleryNames.size());
                 }
             }
 
-            response.sendRedirect(request.getContextPath() + "/admin/admin-product-edit?id="+categoryId+"&msg=update_success");
+            logger.info("Completed update process for product ID {}. Performing redirect...", id);
+            response.sendRedirect(request.getContextPath() + "/admin/admin-product-edit?id=" + categoryId + "&msg=update_success");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An unexpected critical error occurred while Admin was editing product ID '{}': ", idParam, e);
             request.setAttribute("error", "Lỗi update: " + e.getMessage());// Forward lại page edit - Giuwx ID để user không bị mất context
 
             try {
+                logger.debug("Activating fallback Forward mechanism to doGet to preserve the form interface.");
                 doGet(request, response);
             } catch (Exception ex) {
+                logger.error("Fallback Forward flow failed, forcing emergency redirect to product list page. Reason: ", ex);
                 response.sendRedirect(request.getContextPath() + "/admin/admin-product");
             }
         } finally {
-            try { if (conn != null) conn.close(); } catch (Exception ignore) {}
+            try {
+                if (conn != null) conn.close();
+                logger.debug("Safely closed direct JDBC connection.");
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -208,7 +245,7 @@ public class AdminProductEdit extends HttpServlet {
     private void updateThumbnailDirectly(Connection conn, int productId, String imgName) throws Exception {
         // Reset tất cả về 0
         String resetSql = "UPDATE image SET is_thumbnail = 0 WHERE entity_id = ? AND entity_type = 'Product'";
-        try(PreparedStatement ps = conn.prepareStatement(resetSql)){
+        try (PreparedStatement ps = conn.prepareStatement(resetSql)) {
             ps.setInt(1, productId);
             ps.executeUpdate();
         }

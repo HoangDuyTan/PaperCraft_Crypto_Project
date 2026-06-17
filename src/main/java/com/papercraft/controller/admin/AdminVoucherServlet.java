@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -18,6 +20,8 @@ import java.util.List;
 @WebServlet("/admin/admin-voucher")
 public class AdminVoucherServlet extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminVoucherServlet.class);
+
     private final VoucherDAO voucherDAO = new VoucherDAO();
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -26,6 +30,7 @@ public class AdminVoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        logger.debug("Received GET request to AdminVoucherServlet. Action: '{}'", action);
 
         if (action != null) {
             switch (action) {
@@ -39,10 +44,14 @@ public class AdminVoucherServlet extends HttpServlet {
                     editVoucher(request, response);
                     return;
                 case "add":
+                    logger.debug("Forwarding flow to voucher addition form.");
                     request.getRequestDispatcher(
                             "/WEB-INF/views/admin/admin-voucher-add.jsp"
                     ).forward(request, response);
                     return;
+                default:
+                    logger.warn("Warning: Received invalid 'action' value: '{}'. Automatically falling back to default page load flow.", action);
+                    break;
             }
         }
 
@@ -53,16 +62,19 @@ public class AdminVoucherServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        logger.info("Received POST request to process Voucher. Action: '{}'", action);
 
         if ("insert".equals(action)) {
             Voucher v = buildVoucherFromRequest(request);
             voucherDAO.insertVoucher(v);
             response.sendRedirect("admin-voucher");
-
         } else if ("update".equals(action)) {
             Voucher v = buildVoucherFromRequest(request);
             v.setId(Integer.parseInt(request.getParameter("id")));
             voucherDAO.updateVoucher(v);
+            response.sendRedirect("admin-voucher");
+        } else {
+            logger.warn("POST process request rejected due to invalid 'action': '{}'", action);
             response.sendRedirect("admin-voucher");
         }
     }
@@ -72,18 +84,21 @@ public class AdminVoucherServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
         if (keyword == null) keyword = "";
 
+        logger.info("Loading Voucher configuration list with search keyword: '{}'", keyword);
         List<Voucher> vouchers = voucherDAO.getAllVouchers(keyword);
+
         request.setAttribute("vouchers", vouchers);
         request.setAttribute("keyword", keyword);
-        request.getRequestDispatcher(
-                "/WEB-INF/views/admin/admin-voucher.jsp"
-        ).forward(request, response);
+
+        logger.debug("Successfully queried {} Voucher records. Forwarding to display page.", vouchers.size());
+        request.getRequestDispatcher("/WEB-INF/views/admin/admin-voucher.jsp").forward(request, response);
     }
 
     private void toggleVoucher(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         voucherDAO.toggleStatus(id);
+        logger.info("Successfully toggled active status of Voucher ID: {}", id);
         response.sendRedirect("admin-voucher");
     }
 
@@ -91,6 +106,7 @@ public class AdminVoucherServlet extends HttpServlet {
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         voucherDAO.deleteVoucher(id);
+        logger.info("Successfully deleted Voucher ID: {}", id);
         response.sendRedirect("admin-voucher");
     }
 
@@ -98,10 +114,16 @@ public class AdminVoucherServlet extends HttpServlet {
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         Voucher voucher = voucherDAO.getVoucherById(id);
+
+        if (voucher == null) {
+            logger.warn("Voucher information not found in the system matching ID: {}", id);
+            response.sendRedirect("admin-voucher?msg=not_found");
+            return;
+        }
+
         request.setAttribute("voucher", voucher);
-        request.getRequestDispatcher(
-                "/WEB-INF/views/admin/admin-voucher-edit.jsp"
-        ).forward(request, response);
+        logger.debug("Successfully loaded Voucher details for ID {}. Forwarding to edit page.", id);
+        request.getRequestDispatcher("/WEB-INF/views/admin/admin-voucher-edit.jsp").forward(request, response);
     }
 
     private Voucher buildVoucherFromRequest(HttpServletRequest request) {

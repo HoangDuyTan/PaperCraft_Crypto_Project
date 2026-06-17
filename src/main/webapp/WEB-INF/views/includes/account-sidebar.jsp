@@ -33,14 +33,14 @@
         <li>
             <a href="${pageContext.request.contextPath}/change-password"
                class="${fn:contains(uri, 'password') ? 'active' : ''}">
-                <i class="fa-solid fa-key"></i>
+                <i class="fa-solid fa-lock"></i>
                 Đổi mật khẩu
             </a>
         </li>
         <li>
             <a href="${pageContext.request.contextPath}/key-management"
                class="${fn:contains(uri, 'key-management') ? 'active' : ''}">
-                <i class="fa-solid fa-key-skeleton"></i> Quản lý khóa chữ ký số
+                <i class="fa-solid fa-key"></i> Quản lý khóa chữ ký số
             </a>
         </li>
 
