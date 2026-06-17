@@ -217,3 +217,20 @@
 .btn-danger:hover {
     background-color: #b71c1c;
 }
+.btn-success {
+    background-color: #2e7d32;
+    color: white;
+    transition: background-color 0.3s;
+    border: none;
+}
+.btn-success:hover {
+    background-color: #1b5e20;
+}
+.file-upload-wrapper button {
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    cursor: pointer;
+}
+.file-upload-wrapper button:hover {
+    background: #e2e6ea;
+}

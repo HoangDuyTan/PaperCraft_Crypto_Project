@@ -35,15 +35,37 @@
           <p style="color: red; font-weight: bold">${error}</p>
         </c:if>
 
+        <div class="key-action-container" style="margin-bottom: 30px; display: flex; gap: 15px;">
+          <a href="${pageContext.request.contextPath}/download/ToolKySoOffline.zip" download="ToolKySoOffline.zip" class="btn btn-primary" style="display: inline-flex; align-items: center;">
+            <i class="fa-solid fa-download" style="margin-right: 8px;"></i> Tải ứng dụng công cụ ký số
+          </a>
+        </div>
+
         <c:choose>
           <c:when test="${dbKeyStatus == 'NONE' || dbKeyStatus == 'REVOKED' || dbKeyStatus == 'EXPIRED'}">
             <div class="key-notice info">
               <i class="fa-solid fa-circle-info"></i>
-              <span>Tài khoản chưa có chữ ký số hoạt động. Hãy nhấn nút dưới đây để tạo tự động.</span>
+              <span>Tài khoản chưa có chữ ký số hoạt động. Hãy tải công cụ ký hoặc tải lên Public Key của bạn để kích hoạt.</span>
             </div>
-            <form action="${pageContext.request.contextPath}/generate-key" method="post">
-              <button type="submit" class="btn btn-success">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Tạo khóa RSA tự động
+
+            <form action="${pageContext.request.contextPath}/save-key" method="post" id="uploadKeyForm">
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 8px;">Tải lên hoặc nhập khóa công khai (Public Key)</label>
+
+                <div class="file-upload-wrapper" style="margin-bottom: 12px;">
+                  <input type="file" id="publicKeyFile" accept=".txt,.pub,.pem" style="display: none;" onchange="handleFileSelect(this)">
+                  <button type="button" class="btn normal-badge" onclick="document.getElementById('publicKeyFile').click();" style="padding: 8px 15px; font-size: 14px;">
+                    <i class="fa-solid fa-file-import"></i> Chọn tệp Public Key (.txt, .pub)
+                  </button>
+                  <span id="fileNameDisplay" style="margin-left: 10px; color: gray; font-size: 14px;">Chưa chọn tệp nào</span>
+                </div>
+
+                <textarea name="publicKeyInput" id="publicKeyInput" class="form-textarea" rows="6"
+                          placeholder="Dán nội dung chuỗi Public Key Base64 vào đây hoặc tải lên từ tệp..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-success" style="background-color: #2e7d32; color: white;">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu khóa và kích hoạt
               </button>
             </form>
           </c:when>
@@ -85,6 +107,23 @@
 
 <script>
   const contextPath = '${pageContext.request.contextPath}';
+
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('fileNameDisplay').textContent = file.name;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let content = e.target.result.trim();
+
+      content = content.replace(/-----BEGIN PUBLIC KEY-----/, "").replace(/-----END PUBLIC KEY-----/, "").replace(/[\r\n]/g, "");
+
+      document.getElementById('publicKeyInput').value = content;
+    };
+    reader.readAsText(file);
+  }
 </script>
 <script type="module" src="${pageContext.request.contextPath}/js/main.js"></script>
 </body>
