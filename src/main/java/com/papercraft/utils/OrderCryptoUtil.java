@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,23 +65,35 @@ public class OrderCryptoUtil {
                 + safeVoucherCode + ":" + formatMoney(discountAmount) + "|" + formatMoney(totalPrice) + "|" + productPart;
     }
 
-    // Băm SHA-256 => trả về chuỗi hex 64 ktu
-    public static String sha256Hex(String plainText) {
+//    // Băm SHA-256 => trả về chuỗi hex 64 ktu
+//    public static String sha256Hex(String plainText) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] encodedHash = digest.digest(plainText.getBytes(StandardCharsets.UTF_8));
+//            StringBuilder hexString = new StringBuilder();
+//
+//            for (byte b : encodedHash) {
+//                String hex = Integer.toHexString(0xff & b);
+//                if (hex.length() == 1) {
+//                    hexString.append('0');
+//                }
+//                hexString.append(hex);
+//            }
+//            return hexString.toString();
+//        } catch (Exception e) {
+//            throw new RuntimeException("Không thể tạo mã băm SHA-256", e);
+//        }
+//    }
+
+    public static String sha256Base64(String plainText) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedHash = digest.digest(plainText.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
 
-            for (byte b : encodedHash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
+            // Sử dụng Base64 Encoder thay vì xử lý chuỗi Hex bằng StringBuilder
+            return Base64.getEncoder().encodeToString(encodedHash);
         } catch (Exception e) {
-            throw new RuntimeException("Không thể tạo mã băm SHA-256", e);
+            throw new RuntimeException("Không thể tạo mã băm SHA-256 (Base64)", e);
         }
     }
 }

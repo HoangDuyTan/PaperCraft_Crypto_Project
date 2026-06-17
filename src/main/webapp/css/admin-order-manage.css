@@ -29,7 +29,7 @@
     background: #fff;
     padding: 20px 25px;
     border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 
     width: 95%;
     margin: 15px auto;
@@ -59,7 +59,7 @@
 
 input[type="date"],
 input[type="month"],
-#search-order-id{
+#search-order-id {
     width: 100%;
     padding: 12px 14px;
     border: 1.8px solid #d6dbe1;
@@ -83,12 +83,11 @@ input[type="month"]:hover,
 
 input[type="date"]:focus,
 input[type="month"]:focus,
-#search-order-id:focus{
+#search-order-id:focus {
     outline: none;
     border-color: #4a90e2;
-    box-shadow:
-            0 0 0 4px rgba(74,144,226,0.12),
-            0 4px 12px rgba(74,144,226,0.08);
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.12),
+    0 4px 12px rgba(74, 144, 226, 0.08);
     background: #fff;
 }
 
@@ -189,13 +188,13 @@ input[type="month"]::-webkit-calendar-picker-indicator {
     transition: all 0.25s ease;
     min-width: 140px;
     color: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Hover effect */
 .state-order-select:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -273,4 +272,142 @@ input[type="month"]::-webkit-calendar-picker-indicator {
     text-decoration: none;
     color: #0a58ca;
     font-weight: 500;
+}
+
+
+/* ======= ATBM ======= */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.status-verified {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-tampered {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-invalid {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.status-unsigned {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #ced4da;
+}
+
+.status-revoked-valid {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.hdsd-container {
+    background: white;
+    border-left: 5px solid var(--primary-color, #4a90e2);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.hdsd-title {
+    font-weight: bold;
+    color: var(--primary-color, #4a90e2);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.security-status-box {
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+}
+
+.security-status-box h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.security-alert {
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.security-alert i {
+    font-size: 16px;
+    margin-right: 6px;
+}
+
+.security-alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.security-alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.security-alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.security-alert-secondary {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border-color: #d6d8db;
+}
+
+.security-alert-danger ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.security-alert-danger li {
+    word-break: break-all;
+    margin-bottom: 6px;
+}
+
+.security-alert-warning .hash-info {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #665c37;
+}
+
+.security-status-box .hash-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.security-status-box .hash-code.danger {
+    color: #dc3545;
 }

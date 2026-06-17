@@ -1,5 +1,7 @@
 package com.papercraft.model;
 
+import com.papercraft.model.enums.VerificationStatus;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -24,6 +26,11 @@ public class Order implements Serializable {
     private String signature;
     private String voucherCode;
     private BigDecimal discountAmount;
+
+    // ATBM
+    private boolean isSignatureValid;
+    private VerificationStatus verificationStatus;
+    private String currentHashValue;
 
     public Order() {
     }
@@ -168,7 +175,18 @@ public class Order implements Serializable {
         return discountAmount;
     }
 
+    public boolean isSignatureValid() { return isSignatureValid; }
+
+    public void setSignatureValid(boolean signatureValid) { isSignatureValid = signatureValid; }
+
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
     }
+
+    public VerificationStatus getVerificationStatus() { return verificationStatus; }
+
+    public void setVerificationStatus(VerificationStatus verificationStatus) { this.verificationStatus = verificationStatus; }
+
+    public String getCurrentHashValue() { return currentHashValue; }
+    public void setCurrentHashValue(String currentHashValue) { this.currentHashValue = currentHashValue; }
 }

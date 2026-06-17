@@ -3,6 +3,7 @@ package com.papercraft.controller.admin;
 import com.papercraft.dao.*;
 import com.papercraft.model.*;
 import com.papercraft.model.enums.NotificationType;
+import com.papercraft.model.enums.VerificationStatus;
 import com.papercraft.service.OrderVerificationService;
 import com.papercraft.utils.OrderCryptoUtil;
 import jakarta.servlet.ServletException;
@@ -135,25 +136,17 @@ public class AdminOrderViewServlet extends HttpServlet {
                 id, (orderItems != null ? orderItems.size() : 0), (user != null ? user.getEmail() : "N/A"));
 
         // ATBM: Xác thực chữ ký số
-        boolean isSignatureValid = false;
-        String currentHash = "";
+        OrderVerificationService verifyService = new OrderVerificationService();
+        VerificationStatus status = verifyService.verifyOrder(order);
+        order.setVerificationStatus(status);
 
-        String[] activeKeyInfo = userDAO.getActivedKey(order.getUserId());
-        String publicKey = (activeKeyInfo != null) ? activeKeyInfo[0] : null;
+        if (status == VerificationStatus.TAMPERED) {
+            NotificationDAO notiDAO = new NotificationDAO();
+            Notification noti = new Notification(order.getUserId(), NotificationType.ORDER_TAMPERED, order.getId());
+            notiDAO.insertNotification(noti);
 
-        if (order.getSignature() != null && !order.getSignature().isEmpty() && publicKey != null) {
-            String plainText = OrderCryptoUtil.buildOrderPlainText(user.getId(), order.getShippingName(), order.getShippingPhone(), order.getShippingAddress(), order.getVoucherCode(), order.getDiscountAmount(), order.getTotalPrice(), orderItems);
-            currentHash = OrderCryptoUtil.sha256Hex(plainText);
-
-            OrderVerificationService verifyService = new OrderVerificationService();
-            isSignatureValid = verifyService.verifySignature(currentHash, order.getSignature(), publicKey);
-        }
-
-        request.setAttribute("isSignatureValid", isSignatureValid);
-        request.setAttribute("currentCalculatedHash", currentHash);
-
-        if (!isSignatureValid && order.getSignature() != null) {
-            request.setAttribute("securityWarning", "CẢNH BÁO: Dữ liệu đơn hàng đã bị thay đổi trái phép hoặc chữ ký giả mạo!");
+            logger.warn("Cảnh báo bảo mật: Đơn hàng {} bị thay đổi dữ liệu. Thông báo đã được gửi tới User ID: {}",
+                    order.getId(), order.getUserId());
         }
         // =========================
 
