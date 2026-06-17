@@ -572,15 +572,42 @@ public class UserDAO {
     }
 
     public boolean revokeKey(int userId) {
-        String sql = "UPDATE user_keys  SET status = 'REVOKED', revoked_at = NOW()  WHERE user_id = ? AND status = 'ACTIVE'";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "UPDATE user_keys SET status = 'REVOKED', revoked_at = NOW() WHERE user_id = ? AND status = 'ACTIVE' ";
 
-            ps.setInt(1, userId);
-            return ps.executeUpdate() > 0;
+        Connection conn = null;
+
+        try {
+            conn = DBConnect.getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, userId);
+
+                int rows = ps.executeUpdate();
+
+                conn.commit();
+
+                return rows > 0;
+            }
 
         } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return false;
     }

@@ -49,6 +49,33 @@ public class KeyManagementServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("acc");
 
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        String publicKey = request.getParameter("publicKeyInput");
+
+        if (publicKey == null || publicKey.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/key-management?key=error");
+            return;
+        }
+
+        publicKey = publicKey.trim();
+
+        UserDAO dao = new UserDAO();
+        boolean isInserted = dao.insertNewKey(user.getId(), publicKey);
+
+        if (isInserted) {
+            user.setKeyStatus("ACTIVE");
+            session.setAttribute("acc", user);
+
+            response.sendRedirect(request.getContextPath() + "/key-management?key=success");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/key-management?key=error");
+        }
     }
 }
