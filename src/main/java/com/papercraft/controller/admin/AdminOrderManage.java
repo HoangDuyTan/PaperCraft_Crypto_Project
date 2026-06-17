@@ -6,6 +6,8 @@ import com.papercraft.model.Notification;
 import com.papercraft.model.Order;
 import com.papercraft.model.User;
 import com.papercraft.model.enums.NotificationType;
+import com.papercraft.model.enums.VerificationStatus;
+import com.papercraft.service.OrderVerificationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -70,8 +72,9 @@ public class AdminOrderManage extends HttpServlet {
                                 default -> null;
                             };
 
-                            if (typeNoti != null && user != null) {
-                                Notification noti = new Notification(user.getId(), typeNoti, orderId);
+                            if (typeNoti != null) {
+                                int customerId = order.getUserId();
+                                Notification noti = new Notification(customerId, typeNoti, orderId);
                                 notificationDAO.insertNotification(noti);
                                 logger.debug("Sent notification of type '{}' for Order ID: {}", typeNoti, orderId);
                             }
@@ -148,6 +151,15 @@ public class AdminOrderManage extends HttpServlet {
             logger.info("Loading default list of all orders from DB.");
             orders = orderDAO.getAllOrders();
             logger.debug("Successfully loaded {} order records.", (orders != null ? orders.size() : 0));
+        }
+
+
+        OrderVerificationService verifyService = new OrderVerificationService();
+        if (orders != null) {
+            for (Order order : orders) {
+                VerificationStatus verificationStatus = verifyService.verifyOrder(order);
+                order.setVerificationStatus(verificationStatus);
+            }
         }
 
         request.setAttribute("orders", orders);

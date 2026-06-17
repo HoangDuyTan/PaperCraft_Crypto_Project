@@ -27,37 +27,12 @@
 
     <!-- ===========main========= -->
     <main class="admin-main-content">
-        <c:if test="${not empty order.signature}">
-            <div class="security-status-box" style="padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 10px; font-size: 18px;">Trạng thái toàn vẹn (Chữ ký số RSA)</h3>
-                <c:choose>
-                    <c:when test="${isSignatureValid}">
-                        <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 12px; border-radius: 4px;">
-                            <i class="fa-solid fa-shield-check" style="font-size: 18px; margin-right: 5px;"></i>
-                            <strong>HỢP LỆ:</strong> Đơn hàng an toàn, dữ liệu toàn vẹn. Khớp chữ ký số!
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px;">
-                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 18px; margin-right: 5px;"></i>
-                            <strong>CẢNH BÁO BẢO MẬT:</strong> ${securityWarning}
-                            <ul style="margin-top: 10px; font-size: 14px; padding-left: 20px;">
-                                <li><strong>Mã băm lưu trong hóa đơn:</strong> ${order.hashValue}</li>
-                                <li><strong>Mã băm hiện tại (sau khi bị đổi):</strong> ${currentCalculatedHash}</li>
-                            </ul>
-                            <p style="margin-top: 5px; font-size: 14px;"><em>*Hệ thống phát hiện dữ liệu trong Database không khớp với chữ ký gốc do khách hàng tạo!</em></p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </c:if>
-
         <section class="order-detail">
 
             <!-- -------------UP--------- -->
             <section class="up">
                 <div class="back">
-                    <a id="icon-back" href="javascript:history.back()"><i
+                    <a id="icon-back" href="${pageContext.request.contextPath}/admin/admin-order-manage"><i
                             class="fa-solid fa-arrow-left"></i></a>
                     <h1> Chi Tiết Đơn Hàng</h1>
                 </div>
@@ -69,6 +44,62 @@
                     </a>
                 </div>
             </section>
+
+            <c:if test="${not empty order.signature and !order.signature.isBlank()}">
+                <div class="security-status-box">
+                    <h3>Trạng thái toàn vẹn (Chữ ký số RSA)</h3>
+
+                    <c:choose>
+                        <c:when test="${order.verificationStatus == 'VERIFIED'}">
+                            <div class="security-alert security-alert-success">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <strong>HỢP LỆ:</strong> Đơn hàng an toàn, dữ liệu toàn vẹn và chữ ký số hoàn toàn chính xác.
+                            </div>
+                        </c:when>
+
+                        <c:when test="${order.verificationStatus == 'KEY_REVOKED_BUT_VALID'}">
+                            <div class="security-alert security-alert-success">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <strong>HỢP LỆ (KHÓA LỖI THỜI):</strong> Đơn hàng toàn vẹn. Ký bằng cặp khóa cũ đã bị hủy nhưng vẫn hợp lệ tại thời điểm tạo đơn.
+                            </div>
+                        </c:when>
+
+                        <c:when test="${order.verificationStatus == 'TAMPERED'}">
+                            <div class="security-alert security-alert-danger">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <strong>CẢNH BÁO NGUY HIỂM:</strong> Dữ liệu đơn hàng đã bị thay đổi trái phép trong Cơ sở dữ liệu!
+                                <ul>
+                                    <li>
+                                        <strong>Mã băm gốc lưu kèm hóa đơn:</strong>
+                                        <span class="hash-code">${order.hashValue}</span>
+                                    </li>
+                                    <li>
+                                        <strong>Mã băm tính toán thực tế hiện tại:</strong>
+                                        <span class="hash-code danger">${order.currentHashValue}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </c:when>
+
+                        <c:when test="${order.verificationStatus == 'INVALID_SIGNATURE'}">
+                            <div class="security-alert security-alert-warning">
+                                <i class="fa-solid fa-key"></i>
+                                <strong>CẢNH BÁO CHỮ KÝ:</strong> Dữ liệu hóa đơn gốc nguyên vẹn (Mã băm khớp), nhưng <strong>Chữ ký số không hợp lệ</strong> hoặc không được ký bởi chứng thư chính chủ!
+                                <p class="hash-info">
+                                    Mã băm đồng nhất: <span class="hash-code">${order.hashValue}</span>
+                                </p>
+                            </div>
+                        </c:when>
+
+                        <c:otherwise>
+                            <div class="security-alert security-alert-secondary">
+                                <i class="fa-solid fa-question-circle"></i>
+                                <strong>LỖI:</strong> Không xác định được trạng thái xác minh đơn hàng (${order.verificationStatus}).
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </c:if>
 
             <!-- -------CENTER----- -->
             <section class="center">
@@ -148,7 +179,6 @@
                                                                         pattern="#,###"/> đ</span>
                             </p>
                             <p> Thuế(VAT): <span>Đã bao gồm</span></p>
-                            <p>Chữ ký <span>${order.signature}</span></p>
                             <h3>Tổng Cộng: <span><fmt:formatNumber value="${order.totalPrice}"
                                                                    pattern="#,###"/> đ</span></h3>
 

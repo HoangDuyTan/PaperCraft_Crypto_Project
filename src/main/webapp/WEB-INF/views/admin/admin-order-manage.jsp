@@ -81,9 +81,11 @@
                             <th>Ngày Đặt</th>
                             <th>Tổng Tiền</th>
                             <th>Trạng Thái</th>
+                            <th>Xác thực Chữ ký số</th>
                             <th>Hành Động</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <c:forEach items="${orders}" var="o">
                             <tr class="item-page">
@@ -107,6 +109,23 @@
                                         </option>
                                     </select>
                                 </td>
+
+                                <td>
+                                    <span class="status-badge ${o.verificationStatus.cssClass}">
+                                        <c:choose>
+                                            <c:when test="${o.verificationStatus.name() == 'VERIFIED'}"><i
+                                                    class="fa-solid fa-circle-check"></i> ${o.verificationStatus.displayName}</c:when>
+                                            <c:when test="${o.verificationStatus.name() == 'TAMPERED'}"><i
+                                                    class="fa-solid fa-triangle-exclamation"></i> ${o.verificationStatus.displayName}</c:when>
+                                            <c:when test="${o.verificationStatus.name() == 'KEY_REVOKED_BUT_VALID'}"><i
+                                                    class="fa-solid fa-clock-rotate-left"></i> ${o.verificationStatus.displayName}</c:when>
+                                            <c:otherwise><i
+                                                    class="fa-solid fa-circle-question"></i> ${o.verificationStatus.displayName}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </td>
+
                                 <td>
                                     <a href="${pageContext.request.contextPath}/admin/admin-order-view?orderId=${o.id}"
                                        class="btn-action view">Xem</a>

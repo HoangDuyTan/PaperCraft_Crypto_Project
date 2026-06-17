@@ -16,7 +16,10 @@ public enum NotificationType {
 
     PASSWORD_CHANGED("Mật khẩu đã được thay đổi", "Mật khẩu tài khoản của bạn đã được thay đổi thành công.", "change-password"),
 
-    VOUCHER("Khuyến mãi mới", "Có chương trình khuyến mãi mới dành cho bạn.", "voucher");
+    VOUCHER("Khuyến mãi mới", "Có chương trình khuyến mãi mới dành cho bạn.", "voucher"),
+
+    // ATBM
+    ORDER_TAMPERED("Đơn hàng bị cảnh báo bảo mật", "Đơn hàng #%d của bạn đã bị thay đổi dữ liệu trái phép. Vui lòng ký lại đơn hàng để đảm bảo tính pháp lý.", "order-view?orderId=%d");
 
     private final String title;
     private final String contentTemplate;

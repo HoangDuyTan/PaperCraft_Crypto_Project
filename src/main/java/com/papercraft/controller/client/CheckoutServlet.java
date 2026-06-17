@@ -456,7 +456,7 @@ public class CheckoutServlet extends HttpServlet {
         // Tạo chuỗi chuẩn hóa theo format:
         // user_id:shipping_name:shipping_phone:shipping_address|voucher_code:discount_amount|total_price|product_id,quantity,price,discount_rate;...
         String plainText = OrderCryptoUtil.buildOrderPlainText(user.getId(), fullname, phone, fullAddress, voucherCode, discountAmount, grandTotalBD, orderItemsForHash);
-        String serverHashValue = OrderCryptoUtil.sha256Hex(plainText);
+        String serverHashValue = OrderCryptoUtil.sha256Base64(plainText);
 
         //Nếu gọi bước prepare => chỉ trả hash_value về popup, chưa lưu đơn hàng vào db.
         if ("prepare".equalsIgnoreCase(cryptoAction)) {
