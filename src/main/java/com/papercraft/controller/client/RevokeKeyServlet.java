@@ -33,6 +33,21 @@ public class RevokeKeyServlet extends HttpServlet {
         if (isRevoked) {
             user.setKeyStatus("REVOKED");
             session.setAttribute("acc", user);
+
+            try {
+                com.papercraft.dao.NotificationDAO notiDAO = new com.papercraft.dao.NotificationDAO();
+                com.papercraft.model.Notification noti = new com.papercraft.model.Notification();
+
+                noti.setUserId(user.getId());
+                noti.setType(com.papercraft.model.enums.NotificationType.KEY_REVOKED);
+                noti.setContent(com.papercraft.model.enums.NotificationType.KEY_REVOKED.getContentTemplate());
+
+                notiDAO.insertNotification(noti);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Lỗi khi tạo thông báo báo mất khóa.");
+            }
+
             response.sendRedirect( request.getContextPath() + "/key-management?revoked=true");
         } else {
             response.sendRedirect("key-management?error=revoke_failed");

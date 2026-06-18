@@ -19,7 +19,9 @@ public enum NotificationType {
     VOUCHER("Khuyến mãi mới", "Có chương trình khuyến mãi mới dành cho bạn.", "voucher"),
 
     // ATBM
-    ORDER_TAMPERED("Đơn hàng bị cảnh báo bảo mật", "Đơn hàng #%d của bạn đã bị thay đổi dữ liệu trái phép. Vui lòng ký lại đơn hàng để đảm bảo tính pháp lý.", "order-view?orderId=%d");
+    ORDER_TAMPERED("Đơn hàng bị cảnh báo bảo mật", "Đơn hàng #%d của bạn đã bị thay đổi dữ liệu trái phép. Vui lòng ký lại đơn hàng để đảm bảo tính pháp lý.", "order-view?orderId=%d"),
+    KEY_REVOKED("Báo mất khóa thành công", "Bạn đã báo mất khóa chữ ký số. Hệ thống yêu cầu bạn tạo và cập nhật khóa mới để ký các đơn hàng tiếp theo. Lưu ý: Các đơn hàng cũ đã ký xác thực trước thời điểm này vẫn HỢP LỆ và giữ nguyên giá trị pháp lý.", "key-management"),
+    KEY_UPLOADED("Cập nhật khóa mới thành công", "Public Key mới của bạn đã được tải lên hệ thống an toàn. Bạn đã có thể sử dụng khóa (Private Key) mới này để ký xác thực cho các đơn mua hàng tiếp theo.", "key-management");
 
     private final String title;
     private final String contentTemplate;

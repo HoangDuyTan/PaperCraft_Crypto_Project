@@ -1,7 +1,10 @@
 package com.papercraft.controller.client;
 
+import com.papercraft.dao.NotificationDAO;
 import com.papercraft.dao.UserDAO;
+import com.papercraft.model.Notification;
 import com.papercraft.model.User;
+import com.papercraft.model.enums.NotificationType;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -72,6 +75,20 @@ public class KeyManagementServlet extends HttpServlet {
         if (isInserted) {
             user.setKeyStatus("ACTIVE");
             session.setAttribute("acc", user);
+
+            try {
+                NotificationDAO notiDAO = new NotificationDAO();
+                Notification noti = new Notification();
+
+                noti.setUserId(user.getId());
+                noti.setType(NotificationType.KEY_UPLOADED);
+                noti.setContent(NotificationType.KEY_UPLOADED.getContentTemplate());
+
+                notiDAO.insertNotification(noti);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Lỗi khi tạo thông báo cập nhật khóa.");
+            }
 
             response.sendRedirect(request.getContextPath() + "/key-management?key=success");
         } else {
