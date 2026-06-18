@@ -66,18 +66,17 @@ public class OrderVerificationService {
             }
 
             UserDAO userDAO = new UserDAO();
-            String[] activeKeyInfo = userDAO.getActivedKey(order.getUserId());
+            String[] keyInfo = userDAO.getKeyByID(order.getKeyId());
+            String publicKey = keyInfo[0];
+            String status = keyInfo[1];
 
-
-            if (activeKeyInfo != null) {
-                if (verifySignature(recomputedHash, order.getSignature(), activeKeyInfo[0])) {
+            if ("ACTIVE".equals(status)) {
+                if (verifySignature(recomputedHash, order.getSignature(), publicKey)) {
                     return VerificationStatus.VERIFIED;
                 }
-            }
+            } else if ("REVOKED".equals(status)) {
 
-            List<String> revokedKeys = getRevokedKeysFromDB(order.getUserId());
-            for (String revokedKey : revokedKeys) {
-                if (verifySignature(recomputedHash, order.getSignature(), revokedKey)) {
+                if (verifySignature(recomputedHash,order.getSignature(),publicKey)) {
                     return VerificationStatus.KEY_REVOKED_BUT_VALID;
                 }
             }

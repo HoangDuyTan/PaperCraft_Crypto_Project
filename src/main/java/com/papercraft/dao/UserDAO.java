@@ -632,4 +632,45 @@ public class UserDAO {
         }
         return null;
     }
+    public Integer getActivedKeyID(int userId) {
+        String sql = "SELECT id FROM user_keys WHERE user_id = ? AND status = 'ACTIVE' ";
+
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    public String[] getKeyByID(int id) {
+        String sql = "SELECT public_key, status, created_at FROM user_keys WHERE id = ? ";
+
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{rs.getString("public_key"),rs.getString("status")};
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }

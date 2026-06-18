@@ -487,6 +487,8 @@ public class CheckoutServlet extends HttpServlet {
             order.setVoucherCode(voucherCode);
             order.setDiscountAmount(discountAmount);
             order.setTotalPrice(grandTotalBD);
+            int activeKeyId =new UserDAO().getActivedKeyID(user.getId());
+            order.setKeyId(activeKeyId);
         } else {
             response.sendRedirect(request.getContextPath() + "/cart");
             return;

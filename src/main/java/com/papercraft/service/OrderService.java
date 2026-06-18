@@ -1,9 +1,6 @@
 package com.papercraft.service;
 
-import com.papercraft.dao.OrderDAO;
-import com.papercraft.dao.OrderItemDAO;
-import com.papercraft.dao.PaymentDAO;
-import com.papercraft.dao.ProductDAO;
+import com.papercraft.dao.*;
 import com.papercraft.model.*;
 import com.papercraft.utils.DBConnect;
 
@@ -94,6 +91,11 @@ public class OrderService {
             order.setShippingFee(BigDecimal.valueOf(shippingFee));
             order.setTotalPrice(grandTotalBD);
             order.setDiscountAmount(discountAmount);
+            UserDAO userDAO = new UserDAO();
+
+            int activeKeyId = userDAO.getActivedKeyID(user.getId());
+
+            order.setKeyId(activeKeyId);
 
             if (order.getShippingProvider() == null || order.getShippingProvider().isBlank()) {
                 order.setShippingProvider("GHN");
