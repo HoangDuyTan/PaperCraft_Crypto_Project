@@ -8,7 +8,9 @@ import com.papercraft.model.Order;
 import com.papercraft.model.OrderItem;
 import com.papercraft.model.Payment;
 import com.papercraft.model.User;
+import com.papercraft.model.enums.VerificationStatus;
 import com.papercraft.service.OrderService;
+import com.papercraft.service.OrderVerificationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -61,6 +63,12 @@ public class OrderViewServlet extends HttpServlet {
 
         PaymentDAO paymentDAO = new PaymentDAO();
         Payment payment = paymentDAO.getPaymentByOrderId(orderId);
+
+        // ATBM
+        OrderVerificationService verifyService = new OrderVerificationService();
+        VerificationStatus status = verifyService.verifyOrder(order);
+        order.setVerificationStatus(status);
+        //
 
         request.setAttribute("order", order);
         request.setAttribute("orderItems", orderItems);

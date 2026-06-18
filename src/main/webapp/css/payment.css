@@ -746,3 +746,30 @@ select.is-invalid ~ .invalid-feedback {
     gap: 12px;
     margin-top: 16px;
 }
+
+
+/* LINK QUẢN LÝ KHÓA */
+
+.signature-helper-link{
+    margin-bottom: 22px;
+    padding: 14px 16px;
+
+    background: #eef5ff;
+    border-left: 5px solid #165FF2;
+    border-radius: 10px;
+
+    font-size: 15px;
+}
+
+.signature-helper-link a{
+    color: #165FF2;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.signature-helper-link a:hover{
+    text-decoration: underline;
+}
+
+
+

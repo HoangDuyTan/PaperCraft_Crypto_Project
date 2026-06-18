@@ -69,7 +69,7 @@
                                     <button type="button" class="btn normal-badge"
                                             onclick="document.getElementById('publicKeyFile').click();"
                                             style="padding: 8px 15px; font-size: 14px;">
-                                        <i class="fa-solid fa-file-import"></i> Chọn tệp Public Key (.txt, .pub)
+                                        <i class="fa-solid fa-file-import"></i> Chọn tệp Public Key (.txt, .pub, .pem)
                                     </button>
                                     <span id="fileNameDisplay" style="margin-left: 10px; color: gray; font-size: 14px;">Chưa chọn tệp nào</span>
                                 </div>
