@@ -3,6 +3,8 @@ package com.papercraft.controller.client;
 import com.papercraft.dao.OrderDAO;
 import com.papercraft.model.Order;
 import com.papercraft.model.User;
+import com.papercraft.model.enums.VerificationStatus;
+import com.papercraft.service.OrderVerificationService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -32,7 +34,13 @@ public class OrderHistoryServlet extends HttpServlet {
 
         OrderDAO orderDAO = new OrderDAO();
         logger.debug("Querying order list from DB for User ID: '{}'...", user.getId());
+
         List<Order> orderList = orderDAO.getOrdersByUserId(user.getId());
+        OrderVerificationService verifyService = new OrderVerificationService();
+        for (Order order : orderList) {
+            VerificationStatus status = verifyService.verifyOrder(order);
+            order.setVerificationStatus(status);
+        }
 
         logger.info("Successfully loaded history list. Found {} orders for User ID: '{}'", orderList.size(), user.getId());
         request.setAttribute("orderList", orderList);

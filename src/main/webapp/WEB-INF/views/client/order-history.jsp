@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <fmt:setLocale value="vi_VN"/>
-<fmt:setTimeZone value="Asia/Ho_Chi_Minh" />
+<fmt:setTimeZone value="Asia/Ho_Chi_Minh"/>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -43,6 +43,7 @@
                                 <th>Ngày Đặt</th>
                                 <th>Tổng Tiền</th>
                                 <th>Trạng Thái</th>
+                                <th>Xác thực chữ ký số</th>
                                 <th>Hành Động</th>
                             </tr>
                             </thead>
@@ -54,7 +55,40 @@
                                     <td>${o.shippingName}</td>
                                     <td><fmt:formatDate value="${o.createdAt}" pattern="dd/MM/yyyy HH:mm" timeZone="Asia/Ho_Chi_Minh"/></td>
                                     <td><fmt:formatNumber value="${o.totalPrice}" pattern="#,###"/> đ</td>
-                                    <td><span class="status ${o.status}">${o.status}</span></td>
+                                    <td>
+                                        <span class="state-order-select ${o.status}">
+                                            <c:choose>
+                                                <c:when test="${o.status eq 'pending'}">Chờ xử lý</c:when>
+                                                <c:when test="${o.status eq 'shipped'}">Đang giao</c:when>
+                                                <c:when test="${o.status eq 'completed'}">Hoàn thành</c:when>
+                                                <c:otherwise>Đã hủy</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="status-badge ${o.verificationStatus.cssClass}">
+                                            <c:choose>
+                                                <c:when test="${o.verificationStatus.name() == 'VERIFIED'}">
+                                                    <i class="fa-solid fa-circle-check"></i>
+                                                    ${o.verificationStatus.displayName}
+                                                </c:when>
+                                                <c:when test="${o.verificationStatus.name() == 'TAMPERED'}">
+                                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                                    ${o.verificationStatus.displayName}
+                                                </c:when>
+                                                <c:when test="${o.verificationStatus.name() == 'KEY_REVOKED_BUT_VALID'}">
+                                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                                    ${o.verificationStatus.displayName}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="fa-solid fa-circle-question"></i>
+                                                    ${o.verificationStatus.displayName}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </td>
+
                                     <td>
                                         <a href="${pageContext.request.contextPath}/order-view?orderId=${o.id}"
                                            class="btn-action view">Xem</a>

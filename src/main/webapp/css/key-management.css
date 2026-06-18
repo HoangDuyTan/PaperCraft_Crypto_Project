@@ -234,3 +234,33 @@
 .file-upload-wrapper button:hover {
     background: #e2e6ea;
 }
+.key-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: #eef7ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.key-notice i {
+    font-size: 22px;
+    color: #0d6efd;
+    margin-top: 2px;
+}
+
+.notice-content strong {
+    display: block;
+    color: #0d6efd;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.notice-content p {
+    margin: 0;
+    color: #495057;
+    line-height: 1.6;
+    font-size: 14px;
+}
