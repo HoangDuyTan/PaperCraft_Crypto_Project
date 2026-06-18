@@ -27,8 +27,13 @@ public class OrderDAO {
                     order.setStatus(rs.getString("status"));
                     order.setTotalPrice(rs.getBigDecimal("total_price"));
                     order.setNote(rs.getString("note"));
+
+                    // Thông tin chữ ký số
                     order.setSignature(rs.getString("signature"));
                     order.setHashValue(rs.getString("hash_value"));
+                    order.setKeyId(rs.getInt("key_id"));
+
+                    // Khuyến mãi
                     order.setVoucherCode(rs.getString("voucher_code"));
                     order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
 
@@ -39,7 +44,6 @@ public class OrderDAO {
                     order.setShippingPhone(rs.getString("shipping_phone"));
                     order.setShippingAddress(rs.getString("shipping_address"));
                     order.setCreatedAt(rs.getTimestamp("created_at"));
-
                     orders.add(order);
                 }
             }
