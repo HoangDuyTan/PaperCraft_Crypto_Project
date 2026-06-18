@@ -505,8 +505,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (!result.success) {
-                alert(result.message || "Không thể tạo mã băm đơn hàng.");
-                resetOrderButton();
+                if (result.redirect) {
+                    const userAgreed = confirm(result.message);
+
+                    if (userAgreed) {
+                        window.location.href = result.redirect;
+                    } else {
+                        resetOrderButton();
+                    }
+                } else {
+                    alert(result.message || "Không thể tạo mã băm đơn hàng.");
+                    resetOrderButton();
+                }
                 return;
             }
 

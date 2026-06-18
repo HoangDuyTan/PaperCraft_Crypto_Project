@@ -463,7 +463,12 @@ public class CheckoutServlet extends HttpServlet {
         //Nếu gọi bước prepare => chỉ trả hash_value về popup, chưa lưu đơn hàng vào db.
         if ("prepare".equalsIgnoreCase(cryptoAction)) {
             if (activeKeyId == null) {
-                writeJsonError(response, "Bạn chưa thiết lập khóa ký số. Vui lòng truy cập trang Quản lý khóa trong trang Tài khoản của bạn để tạo khóa trước khi đặt hàng.");
+                response.setContentType("application/json;charset=UTF-8");
+                JsonObject json = new JsonObject();
+                json.addProperty("success", false);
+                json.addProperty("message", "Bạn chưa thiết lập khóa ký số. Bạn có muốn chuyển đến trang Quản lý khóa để tạo khóa ngay không?");
+                json.addProperty("redirect", request.getContextPath() + "/key-management");
+                response.getWriter().write(json.toString());
                 return;
             }
 
