@@ -82,10 +82,10 @@ public class OrderService {
             if (discountAmount == null || discountAmount.compareTo(BigDecimal.ZERO) < 0) {
                 discountAmount = BigDecimal.ZERO;
             }
-            BigDecimal grandTotalBD = BigDecimal.valueOf(Math.round(subTotal + shippingFee + vat)).subtract(discountAmount)
-                    .setScale(2, java.math.RoundingMode.HALF_UP);
-            if (grandTotalBD.compareTo(BigDecimal.ZERO) < 0) {
-                grandTotalBD = BigDecimal.ZERO;
+            BigDecimal grandTotalBD = order.getTotalPrice();
+            if (grandTotalBD == null) {
+                conn.rollback();
+                return 0;
             }
 
 
@@ -115,7 +115,7 @@ public class OrderService {
             Payment payment = new Payment();
             payment.setOrderId(orderId);
             payment.setPaymentMethod(paymentMethod);
-            payment.setPaymentAmount(BigDecimal.valueOf(grandTotal));
+            payment.setPaymentAmount(grandTotalBD);
             payment.setStatus(false);
             payment.setTransactionCode(null);
             payment.setPaidAt(null);

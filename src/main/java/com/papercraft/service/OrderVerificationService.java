@@ -68,7 +68,6 @@ public class OrderVerificationService {
             UserDAO userDAO = new UserDAO();
             String[] activeKeyInfo = userDAO.getActivedKey(order.getUserId());
 
-            String publicKeyStr = null;
 
             if (activeKeyInfo != null) {
                 if (verifySignature(recomputedHash, order.getSignature(), activeKeyInfo[0])) {
@@ -83,13 +82,7 @@ public class OrderVerificationService {
                 }
             }
 
-            boolean isSignatureValid = verifySignature(recomputedHash, order.getSignature(), publicKeyStr);
-            order.setSignatureValid(isSignatureValid);
-            if (!isSignatureValid) {
-                return VerificationStatus.INVALID_SIGNATURE;
-            }
-
-            return VerificationStatus.VERIFIED;
+            return VerificationStatus.INVALID_SIGNATURE;
         } catch (Exception e) {
             e.printStackTrace();
             return VerificationStatus.INVALID_SIGNATURE;
