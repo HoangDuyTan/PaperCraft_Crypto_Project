@@ -2,6 +2,7 @@ package com.papercraft.controller.client;
 
 import com.papercraft.dao.UserDAO;
 import com.papercraft.model.User;
+import com.papercraft.model.enums.NotificationType;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -39,8 +40,8 @@ public class RevokeKeyServlet extends HttpServlet {
                 com.papercraft.model.Notification noti = new com.papercraft.model.Notification();
 
                 noti.setUserId(user.getId());
-                noti.setType(com.papercraft.model.enums.NotificationType.KEY_REVOKED);
-                noti.setContent(com.papercraft.model.enums.NotificationType.KEY_REVOKED.getContentTemplate());
+                noti.setType(NotificationType.KEY_REVOKED);
+                noti.setContent(NotificationType.KEY_REVOKED.getContentTemplate());
 
                 notiDAO.insertNotification(noti);
             } catch (Exception e) {
