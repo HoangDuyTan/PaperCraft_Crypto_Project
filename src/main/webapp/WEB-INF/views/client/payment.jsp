@@ -347,6 +347,14 @@
                             Hệ thống đã tạo mã băm SHA-256 từ thông tin đơn hàng.
                             Hãy copy mã này sang Tool ký số, ký bằng Private Key, sau đó dán chữ ký vào ô bên dưới.
                         </p>
+                        <div class="signature-helper-link">
+                            <i class="fa-solid fa-key"></i>
+                            Chưa có Tool hoặc muốn tạo khóa mới?
+                            <a href="${pageContext.request.contextPath}/key-management"
+                               target="_blank">
+                                Quản lý khóa & tải Tool ký số
+                            </a>
+                        </div>
                         <label>Mã băm đơn hàng</label>
                         <textarea id="hashPreview" readonly rows="3"></textarea>
 

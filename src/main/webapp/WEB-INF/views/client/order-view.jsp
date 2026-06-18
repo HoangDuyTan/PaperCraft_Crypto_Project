@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/account.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-order-view.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-order-manage.css">
 </head>
 
 <body>
@@ -51,12 +52,70 @@
                     </div>
                     <c:remove var="successMsg" scope="session"/>
                 </c:if>
-
                 <c:if test="${not empty sessionScope.errorMsg}">
-                    <div style="color: red; text-align: center; margin-bottom: 15px; font-weight: bold;">
-                            ${sessionScope.errorMsg}
-                    </div>
+                    <div style="color: red; text-align: center; margin-bottom: 15px; font-weight: bold;">${sessionScope.errorMsg}</div>
                     <c:remove var="errorMsg" scope="session"/>
+                </c:if>
+                <c:if test="${not empty order.verificationStatus}">
+                    <div class="security-status-box">
+                        <h3>Trạng thái toàn vẹn (Chữ ký số RSA)</h3>
+                        <c:choose>
+
+                            <c:when test="${order.verificationStatus == 'VERIFIED'}">
+                                <div class="security-alert security-alert-success">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <strong>HỢP LỆ:</strong>
+                                    Đơn hàng an toàn, dữ liệu toàn vẹn và chữ ký số hoàn toàn chính xác.
+                                </div>
+                            </c:when>
+
+                            <c:when test="${order.verificationStatus == 'KEY_REVOKED_BUT_VALID'}">
+                                <div class="security-alert security-alert-success">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <strong>HỢP LỆ (KHÓA CŨ):</strong>
+                                    Đơn hàng vẫn hợp lệ tại thời điểm ký.
+                                </div>
+                            </c:when>
+                            <c:when test="${order.verificationStatus == 'TAMPERED'}">
+                                <div class="security-alert security-alert-danger">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    <strong>CẢNH BÁO:</strong>
+                                    Dữ liệu đơn hàng có dấu hiệu bị thay đổi.
+                                    <ul>
+                                        <li>
+                                            <strong>Hash gốc:</strong>
+                                            <span class="hash-code">${order.hashValue}</span>
+                                        </li>
+                                        <li>
+                                            <strong>Hash hiện tại:</strong><span class="hash-code danger">${order.currentHashValue}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </c:when>
+                            <c:when test="${order.verificationStatus == 'INVALID_SIGNATURE'}">
+                                <div class="security-alert security-alert-warning">
+                                    <i class="fa-solid fa-key"></i>
+                                    <strong>CẢNH BÁO:</strong>
+                                    Chữ ký số không hợp lệ.
+                                    <p class="hash-info">Hash:<span class="hash-code">${order.hashValue}</span>
+                                    </p>
+                                </div>
+                            </c:when>
+                            <c:when test="${order.verificationStatus == 'UNSIGNED'}">
+                                <div class="security-alert security-alert-secondary">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                    <strong>Đơn hàng chưa được ký số.</strong>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="security-alert security-alert-secondary">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                    Không xác định được trạng thái xác thực.
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
                 </c:if>
 
                 <section class="center">

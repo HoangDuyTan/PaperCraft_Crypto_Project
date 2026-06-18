@@ -163,3 +163,17 @@
 .account-form .form-group i.toggle-password:hover {
     color: var(--primary-color);
 }
+.content-table-view{
+    flex: 1;
+    max-width: 100%;
+    width: 100%;
+}
+
+.content-table-view .state-order-select{
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+    padding: 8px 0px;
+    border-radius: 10px;
+}
