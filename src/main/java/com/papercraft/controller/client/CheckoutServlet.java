@@ -459,8 +459,14 @@ public class CheckoutServlet extends HttpServlet {
         String plainText = OrderCryptoUtil.buildOrderPlainText(user.getId(), fullname, phone, fullAddress, voucherCode, discountAmount, grandTotalBD, orderItemsForHash);
         String serverHashValue = OrderCryptoUtil.sha256Base64(plainText);
 
+        Integer activeKeyId = new UserDAO().getActivedKeyID(user.getId());
         //Nếu gọi bước prepare => chỉ trả hash_value về popup, chưa lưu đơn hàng vào db.
         if ("prepare".equalsIgnoreCase(cryptoAction)) {
+            if (activeKeyId == null) {
+                writeJsonError(response, "Bạn chưa thiết lập khóa ký số. Vui lòng truy cập trang Quản lý khóa trong trang Tài khoản của bạn để tạo khóa trước khi đặt hàng.");
+                return;
+            }
+
             response.setContentType("application/json;charset=UTF-8");
             JsonObject json = new JsonObject();
             json.addProperty("success", true);
@@ -471,6 +477,12 @@ public class CheckoutServlet extends HttpServlet {
 
         // Nếu gọi bước place => bắt buộc có chữ ký số mới cho lưu đơn hàng.
         if ("place".equalsIgnoreCase(cryptoAction)) {
+            if (activeKeyId == null) {
+                request.setAttribute("error", "Tài khoản của bạn chưa có khóa ký số đang hoạt động. Vui lòng thiết lập khóa trong trang Tài khoản của bạn trước khi thanh toán.");
+                doGet(request, response);
+                return;
+            }
+
             if (submittedHash == null || !submittedHash.equalsIgnoreCase(serverHashValue)) {
                 request.setAttribute("error", "Mã băm đơn hàng không khớp. Vui lòng thử lại.");
                 doGet(request, response);
@@ -487,6 +499,7 @@ public class CheckoutServlet extends HttpServlet {
             order.setVoucherCode(voucherCode);
             order.setDiscountAmount(discountAmount);
             order.setTotalPrice(grandTotalBD);
+            order.setKeyId(activeKeyId);
         } else {
             response.sendRedirect(request.getContextPath() + "/cart");
             return;

@@ -31,6 +31,7 @@ public class Order implements Serializable {
     private boolean isSignatureValid;
     private VerificationStatus verificationStatus;
     private String currentHashValue;
+    private int keyId;
 
     public Order() {
     }
@@ -189,4 +190,12 @@ public class Order implements Serializable {
 
     public String getCurrentHashValue() { return currentHashValue; }
     public void setCurrentHashValue(String currentHashValue) { this.currentHashValue = currentHashValue; }
+
+    public int getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(int keyId) {
+        this.keyId = keyId;
+    }
 }

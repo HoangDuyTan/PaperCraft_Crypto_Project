@@ -222,8 +222,8 @@ public class OrderDAO {
 
     public int insertOrder(Connection conn, Order order) throws SQLException {
         String sql = """
-                    INSERT INTO orders (user_id, status, total_price, hash_value, signature, voucher_code, discount_amount, note, shipping_fee, shipping_provider, shipping_name, shipping_phone, shipping_address)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO orders (user_id, status, total_price, hash_value, signature, voucher_code, discount_amount, note, shipping_fee, shipping_provider, shipping_name, shipping_phone, shipping_address, key_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             ps.setInt(1, order.getUserId());
@@ -239,6 +239,7 @@ public class OrderDAO {
             ps.setString(11, order.getShippingName());
             ps.setString(12, order.getShippingPhone());
             ps.setString(13, order.getShippingAddress());
+            ps.setInt(14, order.getKeyId());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
@@ -278,6 +279,7 @@ public class OrderDAO {
                     order.setHashValue(rs.getString("hash_value"));
                     order.setVoucherCode(rs.getString("voucher_code"));
                     order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+                    order.setKeyId(rs.getInt("key_id"));
 
                     orders.add(order);
                 }

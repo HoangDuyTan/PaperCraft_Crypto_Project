@@ -153,4 +153,27 @@ public class NotificationDAO {
             return false;
         }
     }
+
+    public boolean existsNotification(int userId, int referenceId, NotificationType type) {
+        String sql = """
+        SELECT COUNT(*) FROM notifications 
+        WHERE user_id = ? AND reference_id = ? AND type = ?
+        """;
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ps.setInt(2, referenceId);
+            ps.setString(3, type.name());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -140,13 +140,10 @@ public class AdminOrderViewServlet extends HttpServlet {
         VerificationStatus status = verifyService.verifyOrder(order);
         order.setVerificationStatus(status);
 
-        if (status == VerificationStatus.TAMPERED) {
-            NotificationDAO notiDAO = new NotificationDAO();
+        if (!notificationDAO.existsNotification(order.getUserId(), order.getId(), NotificationType.ORDER_TAMPERED)) {
             Notification noti = new Notification(order.getUserId(), NotificationType.ORDER_TAMPERED, order.getId());
-            notiDAO.insertNotification(noti);
-
-            logger.warn("Cảnh báo bảo mật: Đơn hàng {} bị thay đổi dữ liệu. Thông báo đã được gửi tới User ID: {}",
-                    order.getId(), order.getUserId());
+            notificationDAO.insertNotification(noti);
+            logger.warn("Cảnh báo bảo mật: Đơn hàng {} bị thay đổi dữ liệu. Đã gửi thông báo.", order.getId());
         }
         // =========================
 

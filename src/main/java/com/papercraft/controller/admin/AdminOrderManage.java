@@ -153,12 +153,27 @@ public class AdminOrderManage extends HttpServlet {
             logger.debug("Successfully loaded {} order records.", (orders != null ? orders.size() : 0));
         }
 
-
+        // ATBM
         OrderVerificationService verifyService = new OrderVerificationService();
+        NotificationDAO notiDAO = new NotificationDAO(); // Initialize once outside the loop
+
         if (orders != null) {
             for (Order order : orders) {
                 VerificationStatus verificationStatus = verifyService.verifyOrder(order);
                 order.setVerificationStatus(verificationStatus);
+
+                if (verificationStatus == VerificationStatus.TAMPERED) {
+                    if (!notiDAO.existsNotification(order.getUserId(), order.getId(), NotificationType.ORDER_TAMPERED)) {
+                        Notification noti = new Notification();
+                        noti.setUserId(order.getUserId());
+                        noti.setType(NotificationType.ORDER_TAMPERED);
+                        noti.setReferenceId(order.getId());
+                        noti.setContent("Cảnh báo bảo mật: Đơn hàng #" + order.getId() + " có dấu hiệu bị thay đổi dữ liệu.");
+
+                        notiDAO.insertNotification(noti);
+                        logger.warn("Cảnh báo bảo mật: Đơn hàng {} bị thay đổi dữ liệu. Đã gửi thông báo.", order.getId());
+                    }
+                }
             }
         }
 
