@@ -143,6 +143,7 @@ public class OrderDAO {
                     order.setHashValue(rs.getString("hash_value"));
                     order.setVoucherCode(rs.getString("voucher_code"));
                     order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+                    order.setKeyId(rs.getInt("key_id"));
 
                     return order;
                 }
@@ -269,7 +270,10 @@ public class OrderDAO {
                     Order order = new Order();
                     order.setId(rs.getInt("id"));
                     order.setUserId(rs.getInt("user_id"));
+                    order.setNote(rs.getString("note"));
                     order.setShippingName(rs.getString("shipping_name"));
+                    order.setShippingFee(rs.getBigDecimal("shipping_fee"));
+                    order.setShippingProvider(rs.getString("shipping_provider"));
                     order.setShippingPhone(rs.getString("shipping_phone"));
                     order.setShippingAddress(rs.getString("shipping_address"));
                     order.setCreatedAt(rs.getTimestamp("created_at"));
