@@ -25,6 +25,7 @@ public class OrderItemDAO {
                 oi.product_id,
                 oi.quantity,
                 oi.price,
+                oi.discount_rate,
                 p.product_name,
                 i.img_name
             FROM order_item oi
@@ -33,7 +34,8 @@ public class OrderItemDAO {
                    ON i.entity_id = p.id
                   AND i.entity_type = 'Product'
                   AND i.is_thumbnail = 1
-            WHERE oi.order_id = ?;
+            WHERE oi.order_id = ?
+            ORDER BY product_id ASC;
             """;
 
         try (Connection conn = DBConnect.getConnection();
@@ -60,6 +62,7 @@ public class OrderItemDAO {
                     oi.setProductId(rs.getInt("product_id"));
                     oi.setQuantity(rs.getInt("quantity"));
                     oi.setPrice(rs.getBigDecimal("price"));
+                    oi.setDiscountRate(rs.getBigDecimal("discount_rate"));
                     oi.setProduct(product);
 
                     BigDecimal lineTotal = rs.getBigDecimal("price")
