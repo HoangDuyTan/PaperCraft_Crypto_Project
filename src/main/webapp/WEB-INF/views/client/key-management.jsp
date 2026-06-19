@@ -119,6 +119,47 @@
         </div>
     </div>
 </div>
+<c:if test="${param.showOtp == 'true'}">
+    <div id="otpModal" class="modal-overlay">
+        <div class="otp-modal">
+
+            <div class="otp-modal-header">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h3>Xác nhận báo mất khóa</h3>
+            </div>
+
+            <p>
+                Mã OTP đã được gửi tới email của bạn.
+                Vui lòng nhập mã để xác nhận hủy hiệu lực khóa chữ ký số.
+            </p>
+
+            <form action="${pageContext.request.contextPath}/verify-revoke-key"
+                  method="post">
+
+                <input type="text"
+                       name="otp"
+                       maxlength="6"
+                       class="otp-modal-input"
+                       placeholder="Nhập OTP 6 số"
+                       required>
+
+                <div class="otp-modal-actions">
+                    <button type="submit" class="btn-confirm">
+                        Xác nhận
+                    </button>
+
+                    <button type="button"
+                            class="btn-cancel"
+                            onclick="closeOtpModal()">
+                        Hủy
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</c:if>
 
 <jsp:include page="../includes/footer.jsp"/>
 
@@ -140,6 +181,10 @@
             document.getElementById('publicKeyInput').value = content;
         };
         reader.readAsText(file);
+    }
+    function closeOtpModal() {
+        window.location.href =
+            '${pageContext.request.contextPath}/key-management';
     }
 </script>
 <script type="module" src="${pageContext.request.contextPath}/js/main.js"></script>

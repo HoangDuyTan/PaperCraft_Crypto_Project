@@ -112,5 +112,32 @@ public class EmailUtils {
             return false;
         }
     }
+    public static boolean sendRevokeKeyOTP(
+            String toEmail,
+            String otp) {
+
+        String subject =
+                "Xác nhận báo mất khóa chữ ký số";
+
+        String content = """
+        <h3>Xin chào,</h3>
+
+        <p>Hệ thống vừa nhận được yêu cầu báo mất khóa chữ ký số.</p>
+
+        <p>Mã OTP xác nhận của bạn là:</p>
+
+        <h2 style='color:red;'>%s</h2>
+
+        <p>Mã có hiệu lực trong 5 phút.</p>
+
+        <p>Nếu bạn không thực hiện thao tác này, hãy đổi mật khẩu tài khoản ngay lập tức.</p>
+        """.formatted(otp);
+
+        return sendEmail(
+                toEmail,
+                subject,
+                content
+        );
+    }
 
 }

@@ -3,6 +3,7 @@ package com.papercraft.controller.client;
 import com.papercraft.dao.UserDAO;
 import com.papercraft.model.User;
 import com.papercraft.model.enums.NotificationType;
+import com.papercraft.utils.EmailUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -17,41 +18,37 @@ public class RevokeKeyServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+            throws IOException {
+
         HttpSession session = request.getSession();
+
         User user = (User) session.getAttribute("acc");
 
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(
+                    request.getContextPath() + "/login");
             return;
         }
 
-        UserDAO dao = new UserDAO();
-        boolean isRevoked = dao.revokeKey(user.getId());
+        String otp = EmailUtils.generateOTP();
 
-        System.out.println("isRevoked = " + isRevoked);
+        session.setAttribute("revokeOtp", otp);
 
-        if (isRevoked) {
-            user.setKeyStatus("REVOKED");
-            session.setAttribute("acc", user);
+        session.setAttribute(
+                "revokeOtpExpire",
+                System.currentTimeMillis() + 5 * 60 * 1000
+        );
 
-            try {
-                com.papercraft.dao.NotificationDAO notiDAO = new com.papercraft.dao.NotificationDAO();
-                com.papercraft.model.Notification noti = new com.papercraft.model.Notification();
+        EmailUtils.sendRevokeKeyOTP(
+                user.getEmail(),
+                otp
+        );
 
-                noti.setUserId(user.getId());
-                noti.setType(NotificationType.KEY_REVOKED);
-                noti.setContent(NotificationType.KEY_REVOKED.getContentTemplate());
-
-                notiDAO.insertNotification(noti);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Lỗi khi tạo thông báo báo mất khóa.");
-            }
-
-            response.sendRedirect( request.getContextPath() + "/key-management?revoked=true");
-        } else {
-            response.sendRedirect("key-management?error=revoke_failed");
-        }
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/key-management?showOtp=true"
+        );
     }
 }

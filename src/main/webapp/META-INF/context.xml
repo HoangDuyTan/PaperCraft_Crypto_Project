@@ -8,9 +8,9 @@
             factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
             driverClassName="com.mysql.cj.jdbc.Driver"
 
-            url="jdbc:mysql://localhost:3307/papercraft_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC"
+            url="jdbc:mysql://localhost:3306/papercraft_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC"
             username="root"
-            password="1"
+            password=""
 
             maxTotal="30"
             maxIdle="10"
